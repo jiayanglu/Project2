@@ -1,0 +1,9 @@
+---
+title: "Project2"
+format: html
+editor: visual
+---
+
+```{r}
+#shiny::runGitHub("jiayanglu/Project2")
+```
