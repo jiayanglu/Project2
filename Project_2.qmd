@@ -7,14 +7,10 @@ editor_options:
 ---
 
 ```{r}
-#install.packages(c("shiny", "tidyverse", "jsonlite"))
-
-#library(shiny)
-#library(tidyverse)
-#library(jsonlite)
-
 #shiny::runGitHub("jiayanglu/Project2")
 ```
+
+Install packages needed in the following code chunks.
 
 ```{r}
 options(repos = "https://cloud.r-project.org")
@@ -24,11 +20,13 @@ install.packages(c("shiny", "tidyverse", "jsonlite"))
 library(shiny)
 library(tidyverse)
 library(jsonlite)
+```
 
-#from openFDA API endpoint for animal drug adverse event reports 
+# Queries from openFDA API endpoint for animal drug adverse event reports are listed below.
 
-#This is a query about how many reports regarding to any undesirable experience associated with the use of an animal drug, including adverse reactions, product use errors, and product/manufacturing problems, within a date range in the openFDA API endpoint for animal drug adverse event reports.
+## This is a query about how many reports regarding to any undesirable experience associated with the use of an animal drug, including adverse reactions, product use errors, and product/manufacturing problems, within a date range in the openFDA API endpoint for animal drug adverse event reports.
 
+```{r}
 query_animal_API_reports_over_time <- function(start_date, end_date){
   
   base_URL <- "https://api.fda.gov/"
@@ -64,12 +62,11 @@ query_animal_API_reports_over_time(20040109, 20040129)
 
 ```
 
+# Queries from openFDA API endpoint for adverse drug events are listed below.
+
+## This is a query about how many reports regarding to any undesirable experience associated with the use of an animal drug, including serious drug side effects, product use errors, product quality problems, and therapeutic failures, within a date range in the openFDA API endpoint for adverse drug events.
 
 ```{r}
-
-#from openFDA API endpoint for adverse drug events 
-
-#This is a query about how many reports regarding to any undesirable experience associated with the use of an animal drug, including serious drug side effects, product use errors, product quality problems, and therapeutic failures, within a date range in the openFDA API endpoint for adverse drug events.
 
 query_drug_API_reports_over_time <- function(start_date, end_date){
   
