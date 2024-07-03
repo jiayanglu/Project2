@@ -2,8 +2,107 @@
 title: "Project2"
 format: html
 editor: visual
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r}
+#install.packages(c("shiny", "tidyverse", "jsonlite"))
+
+#library(shiny)
+#library(tidyverse)
+#library(jsonlite)
+
 #shiny::runGitHub("jiayanglu/Project2")
 ```
+
+```{r}
+options(repos = "https://cloud.r-project.org")
+
+install.packages(c("shiny", "tidyverse", "jsonlite"))
+
+library(shiny)
+library(tidyverse)
+library(jsonlite)
+
+#from openFDA API endpoint for animal drug adverse event reports 
+
+#This is a query about how many reports regarding to any undesirable experience associated with the use of an animal drug, including adverse reactions, product use errors, and product/manufacturing problems, within a date range in the openFDA API endpoint for animal drug adverse event reports.
+
+query_animal_API_reports_over_time <- function(start_date, end_date){
+  
+  base_URL <- "https://api.fda.gov/"
+  endpoint <- "animalandveterinary/event.json"
+  query_reports_over_time <- "?count=original_receive_date"
+  full_URL <- paste0(base_URL, endpoint, query_reports_over_time)
+  
+  output_API <- fromJSON(full_URL)
+  reports_over_time_data <- as_tibble(output_API$results)
+  
+  earliest_date <- min(ymd(reports_over_time_data$time))
+  latest_date <- max(ymd(reports_over_time_data$time))
+  
+  reports_over_time_data <- reports_over_time_data |>
+    mutate(year_month_date = ymd(reports_over_time_data$time)) |>
+    select(year_month_date, count)
+
+  if (ymd(start_date) < earliest_date | ymd(end_date) > latest_date){
+    
+    message <- paste0("ERROR: Please pass a date between ", earliest_date, " and ", latest_date, " in the format of YYYYMMDD", ".")
+    stop(message)
+    
+  } else {
+    
+    query_reports_over_time_data <- reports_over_time_data |>
+      filter(year_month_date >= ymd(start_date) & year_month_date <= ymd(end_date))
+    return(query_reports_over_time_data)
+    
+  }
+}
+
+query_animal_API_reports_over_time(20040109, 20040129)
+
+```
+
+
+```{r}
+
+#from openFDA API endpoint for adverse drug events 
+
+#This is a query about how many reports regarding to any undesirable experience associated with the use of an animal drug, including serious drug side effects, product use errors, product quality problems, and therapeutic failures, within a date range in the openFDA API endpoint for adverse drug events.
+
+query_drug_API_reports_over_time <- function(start_date, end_date){
+  
+  base_URL <- "https://api.fda.gov/"
+  endpoint <- "drug/event.json"
+  query_reports_over_time <- "?count=receivedate"
+  full_URL <- paste0(base_URL, endpoint, query_reports_over_time)
+  
+  output_API <- fromJSON(full_URL)
+  reports_over_time_data <- as_tibble(output_API$results)
+  
+  earliest_date <- min(ymd(reports_over_time_data$time))
+  latest_date <- max(ymd(reports_over_time_data$time))
+  
+  reports_over_time_data <- reports_over_time_data |>
+    mutate(year_month_date = ymd(reports_over_time_data$time)) |>
+    select(year_month_date, count)
+
+  if (ymd(start_date) < earliest_date | ymd(end_date) > latest_date){
+    
+    message <- paste0("ERROR: Please pass a date between ", earliest_date, " and ", latest_date, " in the format of YYYYMMDD", ".")
+    stop(message)
+    
+  } else {
+    
+    query_reports_over_time_data <- reports_over_time_data |>
+      filter(year_month_date >= ymd(start_date) & year_month_date <= ymd(end_date))
+    return(query_reports_over_time_data)
+    
+  }
+}
+
+query_drug_API_reports_over_time(20071010, 20210101)
+```
+
+
