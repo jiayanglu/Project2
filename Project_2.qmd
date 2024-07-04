@@ -27,7 +27,8 @@ library(jsonlite)
 ## This is a query about how many reports regarding to any undesirable experience associated with the use of an animal drug, including adverse reactions, product use errors, and product/manufacturing problems, within a date range in the openFDA API endpoint for animal drug adverse event reports.
 
 ```{r}
-query_animal_API_reports_over_time <- function(start_date, end_date){
+
+animal_API_reports_over_time <- function(start_date, end_date){
   
   base_URL <- "https://api.fda.gov/"
   endpoint <- "animalandveterinary/event.json"
@@ -40,10 +41,6 @@ query_animal_API_reports_over_time <- function(start_date, end_date){
   earliest_date <- min(ymd(reports_over_time_data$time))
   latest_date <- max(ymd(reports_over_time_data$time))
   
-  reports_over_time_data <- reports_over_time_data |>
-    mutate(year_month_date = ymd(reports_over_time_data$time)) |>
-    select(year_month_date, count)
-
   if (ymd(start_date) < earliest_date | ymd(end_date) > latest_date){
     
     message <- paste0("ERROR: Please pass a date between ", earliest_date, " and ", latest_date, " in the format of YYYYMMDD", ".")
@@ -51,14 +48,65 @@ query_animal_API_reports_over_time <- function(start_date, end_date){
     
   } else {
     
-    query_reports_over_time_data <- reports_over_time_data |>
-      filter(year_month_date >= ymd(start_date) & year_month_date <= ymd(end_date))
-    return(query_reports_over_time_data)
+    query_receivedate <- "?search=original_receive_date:"
+    query_date_range <- paste0("[", start_date, "+TO+", end_date, "]&count=original_receive_date")
+    full_URL <- paste0(base_URL, endpoint, query_receivedate, query_date_range)
     
+    output_API <- fromJSON(full_URL)
+    reports_over_time_data <- as_tibble(output_API$results)
+    
+    reports_over_time_data <- reports_over_time_data |>
+      mutate(receivedate_ymd = ymd(reports_over_time_data$time)) |>
+      select(receivedate_ymd, count)
+    
+    query_reports_over_time_data <- reports_over_time_data |>
+      filter(receivedate_ymd >= ymd(start_date) & receivedate_ymd <= ymd(end_date))
+    
+    query_name <- paste0("query_", start_date, "_to_", end_date)
+    return(setNames(list(earliest_date, latest_date, query_reports_over_time_data),
+                    c("earliest_date", "latest_date", query_name)))
   }
-}
+}  
 
-query_animal_API_reports_over_time(20040109, 20040129)
+animal_API_reports_over_time(19940101,20060101)
+
+```
+
+## This is a query about primary reporter who holds or provides the most pertinent information related to the adverse event report within a date range in the openFDA API endpoint for animal drug adverse event reports.
+
+```{r}
+
+animal_API_who_reports <- function(start_date, end_date){
+  
+  base_URL <- "https://api.fda.gov/"
+  endpoint <- "animalandveterinary/event.json"
+  query_who_reports <- "?count=original_receive_date"
+  full_URL <- paste0(base_URL, endpoint, query_who_reports)
+
+  output_API <- fromJSON(full_URL)
+  who_reports_data <- as_tibble(output_API$results)
+
+  earliest_date <- min(ymd(who_reports_data$time))
+  latest_date <- max(ymd(who_reports_data$time))
+  
+  if (ymd(start_date) < earliest_date | ymd(end_date) > latest_date){
+
+    message <- paste0("ERROR: Please pass a date between ", earliest_date, " and ", latest_date, " in the format of YYYYMMDD", ".")
+    stop(message)
+
+  } else {
+    
+    query_receivedate <- "?search=original_receive_date:"
+    query_date_range <- paste0("[", start_date, "+TO+", end_date, "]&count=primary_reporter.exact")
+    full_URL <- paste0(base_URL, endpoint, query_receivedate, query_date_range)
+    
+    output_API <- fromJSON(full_URL)
+    who_reports_data <- as_tibble(output_API$results)
+    return(who_reports_data)
+  }
+}  
+
+animal_API_who_reports(20090101, 20190202) 
 
 ```
 
@@ -68,7 +116,7 @@ query_animal_API_reports_over_time(20040109, 20040129)
 
 ```{r}
 
-query_drug_API_reports_over_time <- function(start_date, end_date){
+drug_API_reports_over_time <- function(start_date, end_date){
   
   base_URL <- "https://api.fda.gov/"
   endpoint <- "drug/event.json"
@@ -81,10 +129,6 @@ query_drug_API_reports_over_time <- function(start_date, end_date){
   earliest_date <- min(ymd(reports_over_time_data$time))
   latest_date <- max(ymd(reports_over_time_data$time))
   
-  reports_over_time_data <- reports_over_time_data |>
-    mutate(year_month_date = ymd(reports_over_time_data$time)) |>
-    select(year_month_date, count)
-
   if (ymd(start_date) < earliest_date | ymd(end_date) > latest_date){
     
     message <- paste0("ERROR: Please pass a date between ", earliest_date, " and ", latest_date, " in the format of YYYYMMDD", ".")
@@ -92,14 +136,79 @@ query_drug_API_reports_over_time <- function(start_date, end_date){
     
   } else {
     
+    query_receivedate <- "?search=receivedate:"
+    query_date_range <- paste0("[", start_date, "+TO+", end_date, "]&count=receivedate")
+    full_URL <- paste0(base_URL, endpoint, query_receivedate, query_date_range)
+    
+    output_API <- fromJSON(full_URL)
+    reports_over_time_data <- as_tibble(output_API$results)
+    
+    reports_over_time_data <- reports_over_time_data |>
+      mutate(receivedate_ymd = ymd(reports_over_time_data$time)) |>
+      select(receivedate_ymd, count)
+    
     query_reports_over_time_data <- reports_over_time_data |>
-      filter(year_month_date >= ymd(start_date) & year_month_date <= ymd(end_date))
-    return(query_reports_over_time_data)
+      filter(receivedate_ymd >= ymd(start_date) & receivedate_ymd <= ymd(end_date))
+    
+    query_name <- paste0("query_", start_date, "_to_", end_date)
+    return(setNames(list(earliest_date, latest_date, query_reports_over_time_data),
+                    c("earliest_date", "latest_date", query_name)))
     
   }
-}
+}  
 
-query_drug_API_reports_over_time(20071010, 20210101)
+drug_API_reports_over_time(20040101,20160101)
+
 ```
 
+## This is a query about category of individual who submittd the report within a date range in the openFDA API endpoint for animal drug adverse event reports.
+
+```{r}
+
+base_URL <- "https://api.fda.gov/"
+  endpoint <- "drug/event.json"
+   query_receivedate <- "?search=receivedate:"
+    query_date_range <- paste0("[", 20000101, "+TO+", 20020101, "]&count=primarysource.qualification")
+    full_URL <- paste0(base_URL, endpoint, query_receivedate, query_date_range)
+    
+    output_API <- fromJSON(full_URL)
+    str(output_API, max.level = 1)
+    output_API$results
+  
+  
+
+drug_API_who_reports <- function(start_date, end_date){
+  
+  base_URL <- "https://api.fda.gov/"
+  endpoint <- "drug/event.json"
+  query_who_reports <- "?count=receivedate"
+  full_URL <- paste0(base_URL, endpoint, query_who_reports)
+
+  output_API <- fromJSON(full_URL)
+  who_reports_data <- as_tibble(output_API$results)
+
+  earliest_date <- min(ymd(who_reports_data$time))
+  latest_date <- max(ymd(who_reports_data$time))
+  
+  if (ymd(start_date) < earliest_date | ymd(end_date) > latest_date){
+
+    message <- paste0("ERROR: Please pass a date between ", earliest_date, " and ", latest_date, " in the format of YYYYMMDD", ".")
+    stop(message)
+
+  } else {
+    
+    query_receivedate <- "?search=receivedate:"
+    query_date_range <- paste0("[", start_date, "+TO+", end_date, "]&count=primarysource.qualification")
+    full_URL <- paste0(base_URL, endpoint, query_receivedate, query_date_range)
+    
+    output_API <- fromJSON(full_URL)
+    who_reports_data <- as_tibble(output_API$results)
+    return(who_reports_data)
+  }
+}  
+
+# 1: Physician; 2: Pharmacist; 3: Other health professional; 4: Lawyer; 5: Consumer or non-health professional
+drug_API_who_reports(20040101, 20240331)
+
+```
 
