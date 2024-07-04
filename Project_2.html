@@ -190,48 +190,66 @@ The following object is masked from 'package:shiny':
 <span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>}  </span>
 <span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a><span class="fu">animal_API_reports_over_time</span>(<span class="dv">19940101</span>,<span class="dv">20060101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_19940101_to_20060101
-# A tibble: 3,638 × 2
-   receivedate_ymd count
-   &lt;date&gt;          &lt;int&gt;
- 1 1994-01-04          4
- 2 1994-01-05          1
- 3 1994-01-06          5
- 4 1994-01-07          2
- 5 1994-01-09          1
- 6 1994-01-10          1
- 7 1994-01-11          3
- 8 1994-01-12          5
- 9 1994-01-13          1
-10 1994-01-14         57
-# ℹ 3,628 more rows</code></pre>
-</div>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a><span class="co">#animal_API_reports_over_time(19940101,20060101)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="who-reports" class="level2">
 <h2 class="anchored" data-anchor-id="who-reports">Who reports</h2>
 <p>This is a query about primary reporter who holds or provides the most pertinent information related to the adverse event report within a date range in the openFDA API endpoint for the animal drug adverse event reports.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>animal_API_who_reports <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>animal_API_who_reports <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary/event.json"</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  query_who_reports <span class="ot">&lt;-</span> <span class="st">"?count=original_receive_date"</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_who_reports)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  who_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(who_reports_data<span class="sc">$</span>time))</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(who_reports_data<span class="sc">$</span>time))</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=original_receive_date:"</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=primary_reporter.exact"</span>)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    who_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, who_reports_data),</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>}  </span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="co">#animal_API_who_reports(20090101, 20190202) </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="types-of-report" class="level2">
+<h2 class="anchored" data-anchor-id="types-of-report">Types of report</h2>
+<p>This is a query about the types of adverse events in the report within a date range in the openFDA API endpoint for the animal drug adverse event reports.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>animal_API_types_of_reports <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary/event.json"</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  query_who_reports <span class="ot">&lt;-</span> <span class="st">"?count=original_receive_date"</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_who_reports)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  query_types_of_reports <span class="ot">&lt;-</span> <span class="st">"?count=original_receive_date"</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_types_of_reports)</span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  who_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  types_of_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
 <span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(who_reports_data<span class="sc">$</span>time))</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(who_reports_data<span class="sc">$</span>time))</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(types_of_reports_data<span class="sc">$</span>time))</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(types_of_reports_data<span class="sc">$</span>time))</span>
 <span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a></span>
@@ -241,57 +259,79 @@ $query_19940101_to_20060101
 <span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
 <span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=original_receive_date:"</span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=primary_reporter.exact"</span>)</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=type_of_information.exact"</span>)</span>
 <span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
 <span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    who_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    types_of_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
 <span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, who_reports_data),</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, types_of_reports_data),</span>
 <span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>}  </span>
 <span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="fu">animal_API_who_reports</span>(<span class="dv">20090101</span>, <span class="dv">20190202</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_20090101_to_20190202
-# A tibble: 7 × 2
-  term                            count
-  &lt;chr&gt;                           &lt;int&gt;
-1 Other                          296070
-2 Animal Owner                   173725
-3 Veterinarian                   115971
-4 Other Health Care Professional  42859
-5 Patient                          1801
-6 Unknown                           193
-7 Physician                          55</code></pre>
-</div>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="co">#animal_API_types_of_reports(20090101, 20190202) </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="types-of-report" class="level2">
-<h2 class="anchored" data-anchor-id="types-of-report">Types of report</h2>
-<p>This is a query about the types of adverse events in the report within a date range in the openFDA API endpoint for the animal drug adverse event reports.</p>
+<section id="animal-breeds" class="level2">
+<h2 class="anchored" data-anchor-id="animal-breeds">Animal breeds</h2>
+<p>This is a query about animal breeds in the adverse events report within a date range in the openFDA API endpoint for the animal drug adverse event reports.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>animal_API_types_of_reports <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>animal_API_animal_breeds <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary/event.json"</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  query_animal_breeds <span class="ot">&lt;-</span> <span class="st">"?count=original_receive_date"</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_animal_breeds)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  animal_breeds_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(animal_breeds_data<span class="sc">$</span>time))</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(animal_breeds_data<span class="sc">$</span>time))</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=original_receive_date:"</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=animal.breed.breed_component.exact"</span>)</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>    animal_breeds_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, animal_breeds_data),</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>}  </span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a><span class="co">#animal_API_animal_breeds(20110101, 20190202) </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reactions" class="level2">
+<h2 class="anchored" data-anchor-id="reactions">Reactions</h2>
+<p>This is a query about reactions in the adverse events report within a date range in the openFDA API endpoint for the animal drug adverse event reports.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>animal_API_reactions <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary/event.json"</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  query_types_of_reports <span class="ot">&lt;-</span> <span class="st">"?count=original_receive_date"</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_types_of_reports)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  query_reactions <span class="ot">&lt;-</span> <span class="st">"?count=original_receive_date"</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_reactions)</span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  types_of_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  reactions_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(types_of_reports_data<span class="sc">$</span>time))</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(types_of_reports_data<span class="sc">$</span>time))</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(reactions_data<span class="sc">$</span>time))</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(reactions_data<span class="sc">$</span>time))</span>
 <span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
 <span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
@@ -301,230 +341,61 @@ $query_20090101_to_20190202
 <span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
 <span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=original_receive_date:"</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=type_of_information.exact"</span>)</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=reaction.veddra_term_name.exact"</span>)</span>
 <span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
 <span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>    types_of_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>    reactions_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
 <span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, types_of_reports_data),</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, reactions_data),</span>
 <span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
 <span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>}  </span>
 <span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="fu">animal_API_types_of_reports</span>(<span class="dv">20090101</span>, <span class="dv">20190202</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_20090101_to_20190202
-# A tibble: 11 × 2
-   term                                                                    count
-   &lt;chr&gt;                                                                   &lt;int&gt;
- 1 Safety Issue                                                           421526
- 2 Lack Of Expected Effectiveness                                         107287
- 3 Manufacturing/Product Defect Manufacturing Defect With no Adverse Eve…  71968
- 4 Both Safety And Lack Of Expected Effectiveness                          22595
- 5 Manufacturing/Product Defect Manufacturing Defect (Safety)               7279
- 6 Manufacturing/Product Defect Manufacturing Defect (Loee)                 2086
- 7 Manufacturing/Product Defect Manufacturing Defect (Both Safety And Lo…    659
- 8 Other                                                                      59
- 9 Safety Issue (Clinical Studies)                                            48
-10 Lack Of Expected Effectiveness (Clinical Studies)                           3
-11 Both Safety And LOEE Issue (Clinical Studies)                               2</code></pre>
-</div>
-</div>
-</section>
-<section id="animal-breeds" class="level2">
-<h2 class="anchored" data-anchor-id="animal-breeds">Animal breeds</h2>
-<p>This is a query about animal breeds in the adverse events report within a date range in the openFDA API endpoint for the animal drug adverse event reports.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>animal_API_animal_breeds <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary/event.json"</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  query_animal_breeds <span class="ot">&lt;-</span> <span class="st">"?count=original_receive_date"</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_animal_breeds)</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  animal_breeds_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(animal_breeds_data<span class="sc">$</span>time))</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(animal_breeds_data<span class="sc">$</span>time))</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=original_receive_date:"</span></span>
-<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=animal.breed.breed_component.exact"</span>)</span>
-<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
-<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    animal_breeds_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
-<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, animal_breeds_data),</span>
-<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
-<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>}  </span>
-<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a><span class="fu">animal_API_animal_breeds</span>(<span class="dv">20110101</span>, <span class="dv">20190202</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_20110101_to_20190202
-# A tibble: 100 × 2
-   term                  count
-   &lt;chr&gt;                 &lt;int&gt;
- 1 Retriever - Labrador  50643
- 2 Dog (unknown)         39024
- 3 Crossbred Canine/dog  36366
- 4 Domestic Shorthair    26865
- 5 Chihuahua             18750
- 6 Retriever - Golden    16363
- 7 Terrier - Yorkshire   16362
- 8 Shepherd Dog - German 16298
- 9 Shih Tzu              15551
-10 Boxer (German Boxer)  12057
-# ℹ 90 more rows</code></pre>
-</div>
-</div>
-</section>
-<section id="reactions" class="level2">
-<h2 class="anchored" data-anchor-id="reactions">Reactions</h2>
-<p>This is a query about reactions in the adverse events report within a date range in the openFDA API endpoint for the animal drug adverse event reports.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>animal_API_reactions <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary/event.json"</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  query_reactions <span class="ot">&lt;-</span> <span class="st">"?count=original_receive_date"</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_reactions)</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  reactions_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(reactions_data<span class="sc">$</span>time))</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(reactions_data<span class="sc">$</span>time))</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=original_receive_date:"</span></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=reaction.veddra_term_name.exact"</span>)</span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    reactions_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
-<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, reactions_data),</span>
-<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
-<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>}  </span>
-<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a><span class="fu">animal_API_reactions</span>(<span class="dv">20180101</span>, <span class="dv">20190202</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_20180101_to_20190202
-# A tibble: 100 × 2
-   term                                                                    count
-   &lt;chr&gt;                                                                   &lt;int&gt;
- 1 Vomiting                                                                14518
- 2 Lethargy (see also Central nervous system depression in 'Neurological')  6746
- 3 INEFFECTIVE, HOOKS                                                       4659
- 4 Diarrhoea                                                                4519
- 5 Lack of efficacy (endoparasite) - heartworm                              3998
- 6 Lack of efficacy (ectoparasite) - flea                                   2726
- 7 Seizure NOS                                                              2565
- 8 INEFFECTIVE, HEARTWORM LARVAE                                            2489
- 9 UNPALATABLE                                                              2355
-10 Anorexia                                                                 2110
-# ℹ 90 more rows</code></pre>
-</div>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a><span class="co">#animal_API_reactions(20180101, 20190202) </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="outcomes" class="level2">
 <h2 class="anchored" data-anchor-id="outcomes">Outcomes</h2>
 <p>This is a query about animal’s medical status after treatment within a date range in the openFDA API endpoint for the animal drug adverse event reports.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>animal_API_outcomes <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary/event.json"</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  query_outcomes <span class="ot">&lt;-</span> <span class="st">"?count=original_receive_date"</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_outcomes)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  outcomes_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(outcomes_data<span class="sc">$</span>time))</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(outcomes_data<span class="sc">$</span>time))</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=original_receive_date:"</span></span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=outcome.medical_status.exact"</span>)</span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    outcomes_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, outcomes_data),</span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>}  </span>
-<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a><span class="fu">animal_API_outcomes</span>(<span class="dv">20180101</span>, <span class="dv">20190901</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_20180101_to_20190901
-# A tibble: 6 × 2
-  term                   count
-  &lt;chr&gt;                  &lt;int&gt;
-1 Outcome Unknown        40094
-2 Recovered/Normal       30899
-3 Ongoing                25585
-4 Recovered with Sequela  4604
-5 Died                    3395
-6 Euthanized              2254</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>animal_API_outcomes <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary/event.json"</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  query_outcomes <span class="ot">&lt;-</span> <span class="st">"?count=original_receive_date"</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_outcomes)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  outcomes_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(outcomes_data<span class="sc">$</span>time))</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(outcomes_data<span class="sc">$</span>time))</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=original_receive_date:"</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=outcome.medical_status.exact"</span>)</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>    outcomes_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, outcomes_data),</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>}  </span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a><span class="co">#animal_API_outcomes(20180101, 20190901) </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -535,128 +406,88 @@ $query_20180101_to_20190901
 <h2 class="anchored" data-anchor-id="reports-over-time-1">Reports over time</h2>
 <p>This is a query about how many reports regarding to any undesirable experience associated with the use of an animal drug, including serious drug side effects, product use errors, product quality problems, and therapeutic failures, within a date range in the openFDA API endpoint for the adverse drug events.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>drug_API_reports_over_time <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"drug/event.json"</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  query_reports_over_time <span class="ot">&lt;-</span> <span class="st">"?count=receivedate"</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_reports_over_time)</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  reports_over_time_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(reports_over_time_data<span class="sc">$</span>time))</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(reports_over_time_data<span class="sc">$</span>time))</span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=receivedate:"</span></span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=receivedate"</span>)</span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>    reports_over_time_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>    reports_over_time_data <span class="ot">&lt;-</span> reports_over_time_data <span class="sc">|&gt;</span></span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">receivedate_ymd =</span> <span class="fu">ymd</span>(reports_over_time_data<span class="sc">$</span>time)) <span class="sc">|&gt;</span></span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(receivedate_ymd, count) <span class="sc">|&gt;</span></span>
-<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(receivedate_ymd <span class="sc">&gt;=</span> <span class="fu">ymd</span>(start_date) <span class="sc">&amp;</span> receivedate_ymd <span class="sc">&lt;=</span> <span class="fu">ymd</span>(end_date))</span>
-<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
-<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, reports_over_time_data),</span>
-<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
-<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>}  </span>
-<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a><span class="fu">drug_API_reports_over_time</span>(<span class="dv">20040101</span>,<span class="dv">20160101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1986-12-24"
-
-$latest_date
-[1] "2024-03-31"
-
-$query_20040101_to_20160101
-# A tibble: 4,145 × 2
-   receivedate_ymd count
-   &lt;date&gt;          &lt;int&gt;
- 1 2004-01-01          1
- 2 2004-01-02        543
- 3 2004-01-03          2
- 4 2004-01-04         58
- 5 2004-01-05        250
- 6 2004-01-06        393
- 7 2004-01-07        356
- 8 2004-01-08        482
- 9 2004-01-09        532
-10 2004-01-10          2
-# ℹ 4,135 more rows</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>drug_API_reports_over_time <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"drug/event.json"</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  query_reports_over_time <span class="ot">&lt;-</span> <span class="st">"?count=receivedate"</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_reports_over_time)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  reports_over_time_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(reports_over_time_data<span class="sc">$</span>time))</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(reports_over_time_data<span class="sc">$</span>time))</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=receivedate:"</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=receivedate"</span>)</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    reports_over_time_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>    reports_over_time_data <span class="ot">&lt;-</span> reports_over_time_data <span class="sc">|&gt;</span></span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">receivedate_ymd =</span> <span class="fu">ymd</span>(reports_over_time_data<span class="sc">$</span>time)) <span class="sc">|&gt;</span></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(receivedate_ymd, count) <span class="sc">|&gt;</span></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(receivedate_ymd <span class="sc">&gt;=</span> <span class="fu">ymd</span>(start_date) <span class="sc">&amp;</span> receivedate_ymd <span class="sc">&lt;=</span> <span class="fu">ymd</span>(end_date))</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, reports_over_time_data),</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>}  </span>
+<span id="cb17-39"><a href="#cb17-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-40"><a href="#cb17-40" aria-hidden="true" tabindex="-1"></a><span class="co">#drug_API_reports_over_time(20040101,20160101)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="who-reports-1" class="level2">
 <h2 class="anchored" data-anchor-id="who-reports-1">Who reports</h2>
 <p>This is a query about category of individual who submittd the report within a date range in the openFDA API endpoint for the animal drug adverse event reports.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>drug_API_who_reports <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"drug/event.json"</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  query_who_reports <span class="ot">&lt;-</span> <span class="st">"?count=receivedate"</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_who_reports)</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  who_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(who_reports_data<span class="sc">$</span>time))</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(who_reports_data<span class="sc">$</span>time))</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=receivedate:"</span></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=primarysource.qualification"</span>)</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>    who_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
-<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, who_reports_data),</span>
-<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
-<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>}  </span>
-<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a><span class="co"># 1: Physician; 2: Pharmacist; 3: Other health professional; 4: Lawyer; 5: Consumer or non-health professional</span></span>
-<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a><span class="fu">drug_API_who_reports</span>(<span class="dv">20040101</span>, <span class="dv">20240331</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1986-12-24"
-
-$latest_date
-[1] "2024-03-31"
-
-$query_20040101_to_20240331
-# A tibble: 5 × 2
-   term   count
-  &lt;int&gt;   &lt;int&gt;
-1     5 8033656
-2     1 3943707
-3     3 3345506
-4     2 1136590
-5     4  521946</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>drug_API_who_reports <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  endpoint <span class="ot">&lt;-</span> <span class="st">"drug/event.json"</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  query_who_reports <span class="ot">&lt;-</span> <span class="st">"?count=receivedate"</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_who_reports)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  who_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(who_reports_data<span class="sc">$</span>time))</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(who_reports_data<span class="sc">$</span>time))</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    query_receivedate <span class="ot">&lt;-</span> <span class="st">"?search=receivedate:"</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count=primarysource.qualification"</span>)</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, query_receivedate, query_date_range)</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>    who_reports_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, who_reports_data),</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>}  </span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="co"># 1: Physician; 2: Pharmacist; 3: Other health professional; 4: Lawyer; 5: Consumer or non-health professional</span></span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a><span class="co">#drug_API_who_reports(20040101, 20240331)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -664,266 +495,165 @@ $query_20040101_to_20240331
 <h1>A universal query code chunk</h1>
 <p>This is a universal query code chunk to query from either “animalandveterinary” or “drug” in openFDA API endpoint. There are total 6 different queries to get 6 different types of data from “animalandveterinary” endpoint, which are “Reports over time”(query=1), “Who reports”(query=2), “Types of report”(query=3), “Animal breeds”(query=4), “Reactions”(query=5), and “Outcomes”(query=6). There are total 2 different queries to get 2 different types of data from “drug” endpoint, which are “Reports over time”(query=1), “Who reports”(query=2).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>endpoint_API_query <span class="ot">&lt;-</span> <span class="cf">function</span>(endpoint, query, start_date, end_date){</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>endpoint <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"animalandveterinary"</span>, <span class="st">"drug"</span>)){</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please choose endpoint 'animalandveterinary' or 'drug'."</span>)</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  event <span class="ot">&lt;-</span> <span class="st">"/event.json"</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  count <span class="ot">&lt;-</span> <span class="st">"?count="</span></span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  receive_date <span class="ot">&lt;-</span> <span class="cf">if</span> (endpoint <span class="sc">==</span> <span class="st">"drug"</span>) <span class="st">"receivedate"</span> <span class="cf">else</span> <span class="st">"original_receive_date"</span></span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, event, count, receive_date)</span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  receivedate_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)  </span>
-<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(receivedate_data<span class="sc">$</span>time))</span>
-<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(receivedate_data<span class="sc">$</span>time))</span>
-<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
-<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
-<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
-<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (endpoint <span class="sc">==</span> <span class="st">"animalandveterinary"</span>){</span>
-<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>query <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>)){</span>
-<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>        message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please choose query from 1 to 6."</span>)</span>
-<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>        <span class="fu">stop</span>(message)</span>
-<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">1</span>){</span>
-<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, receive_date)</span>
-<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">2</span>){</span>
-<span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"primary_reporter.exact"</span></span>
-<span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
-<span id="cb27-37"><a href="#cb27-37" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">3</span>){</span>
-<span id="cb27-38"><a href="#cb27-38" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"type_of_information.exact"</span></span>
-<span id="cb27-39"><a href="#cb27-39" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
-<span id="cb27-40"><a href="#cb27-40" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">4</span>){</span>
-<span id="cb27-41"><a href="#cb27-41" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"animal.breed.breed_component.exact"</span></span>
-<span id="cb27-42"><a href="#cb27-42" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
-<span id="cb27-43"><a href="#cb27-43" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">5</span>){</span>
-<span id="cb27-44"><a href="#cb27-44" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"reaction.veddra_term_name.exact"</span></span>
-<span id="cb27-45"><a href="#cb27-45" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
-<span id="cb27-46"><a href="#cb27-46" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">6</span>){</span>
-<span id="cb27-47"><a href="#cb27-47" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"outcome.medical_status.exact"</span></span>
-<span id="cb27-48"><a href="#cb27-48" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
-<span id="cb27-49"><a href="#cb27-49" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb27-50"><a href="#cb27-50" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (endpoint <span class="sc">==</span> <span class="st">"drug"</span>){</span>
-<span id="cb27-51"><a href="#cb27-51" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb27-52"><a href="#cb27-52" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(<span class="sc">!</span>query <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)){</span>
-<span id="cb27-53"><a href="#cb27-53" aria-hidden="true" tabindex="-1"></a>        message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please choose query from 1 to 2."</span>)</span>
-<span id="cb27-54"><a href="#cb27-54" aria-hidden="true" tabindex="-1"></a>        <span class="fu">stop</span>(message)</span>
-<span id="cb27-55"><a href="#cb27-55" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">1</span>){</span>
-<span id="cb27-56"><a href="#cb27-56" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, receive_date)</span>
-<span id="cb27-57"><a href="#cb27-57" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">2</span>){</span>
-<span id="cb27-58"><a href="#cb27-58" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"primarysource.qualification"</span></span>
-<span id="cb27-59"><a href="#cb27-59" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
-<span id="cb27-60"><a href="#cb27-60" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb27-61"><a href="#cb27-61" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb27-62"><a href="#cb27-62" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb27-63"><a href="#cb27-63" aria-hidden="true" tabindex="-1"></a>    search <span class="ot">&lt;-</span> <span class="st">"?search="</span></span>
-<span id="cb27-64"><a href="#cb27-64" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, event, search, receive_date, query_date_range)</span>
-<span id="cb27-65"><a href="#cb27-65" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb27-66"><a href="#cb27-66" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
-<span id="cb27-67"><a href="#cb27-67" aria-hidden="true" tabindex="-1"></a>    query_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
-<span id="cb27-68"><a href="#cb27-68" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb27-69"><a href="#cb27-69" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">1</span>){</span>
-<span id="cb27-70"><a href="#cb27-70" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb27-71"><a href="#cb27-71" aria-hidden="true" tabindex="-1"></a>      query_data <span class="ot">&lt;-</span> query_data <span class="sc">|&gt;</span></span>
-<span id="cb27-72"><a href="#cb27-72" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">receivedate_ymd =</span> <span class="fu">ymd</span>(query_data<span class="sc">$</span>time)) <span class="sc">|&gt;</span></span>
-<span id="cb27-73"><a href="#cb27-73" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(receivedate_ymd, count) <span class="sc">|&gt;</span></span>
-<span id="cb27-74"><a href="#cb27-74" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(receivedate_ymd <span class="sc">&gt;=</span> <span class="fu">ymd</span>(start_date) <span class="sc">&amp;</span> receivedate_ymd <span class="sc">&lt;=</span> <span class="fu">ymd</span>(end_date))</span>
-<span id="cb27-75"><a href="#cb27-75" aria-hidden="true" tabindex="-1"></a>    } </span>
-<span id="cb27-76"><a href="#cb27-76" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb27-77"><a href="#cb27-77" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, endpoint, <span class="st">"_"</span>, query, <span class="st">"_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
-<span id="cb27-78"><a href="#cb27-78" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, query_data),</span>
-<span id="cb27-79"><a href="#cb27-79" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
-<span id="cb27-80"><a href="#cb27-80" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb27-81"><a href="#cb27-81" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb27-82"><a href="#cb27-82" aria-hidden="true" tabindex="-1"></a>}  </span>
-<span id="cb27-83"><a href="#cb27-83" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-84"><a href="#cb27-84" aria-hidden="true" tabindex="-1"></a><span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">1</span>,<span class="dv">20000101</span>,<span class="dv">20120101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_animalandveterinary_1_20000101_to_20120101
-# A tibble: 4,285 × 2
-   receivedate_ymd count
-   &lt;date&gt;          &lt;int&gt;
- 1 2000-01-01          3
- 2 2000-01-02          2
- 3 2000-01-03         89
- 4 2000-01-04         23
- 5 2000-01-05         21
- 6 2000-01-06         40
- 7 2000-01-07         42
- 8 2000-01-09          1
- 9 2000-01-10        144
-10 2000-01-11         65
-# ℹ 4,275 more rows</code></pre>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>endpoint_API_query <span class="ot">&lt;-</span> <span class="cf">function</span>(endpoint, query, start_date, end_date){</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span>endpoint <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"animalandveterinary"</span>, <span class="st">"drug"</span>)){</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please choose endpoint 'animalandveterinary' or 'drug'."</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  base_URL <span class="ot">&lt;-</span> <span class="st">"https://api.fda.gov/"</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  event <span class="ot">&lt;-</span> <span class="st">"/event.json"</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  count <span class="ot">&lt;-</span> <span class="st">"?count="</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  receive_date <span class="ot">&lt;-</span> <span class="cf">if</span> (endpoint <span class="sc">==</span> <span class="st">"drug"</span>) <span class="st">"receivedate"</span> <span class="cf">else</span> <span class="st">"original_receive_date"</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, event, count, receive_date)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  receivedate_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)  </span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  earliest_date <span class="ot">&lt;-</span> <span class="fu">min</span>(<span class="fu">ymd</span>(receivedate_data<span class="sc">$</span>time))</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  latest_date <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">ymd</span>(receivedate_data<span class="sc">$</span>time))</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">ymd</span>(start_date) <span class="sc">&lt;</span> earliest_date <span class="sc">|</span> <span class="fu">ymd</span>(end_date) <span class="sc">&gt;</span> latest_date){</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please pass a date between "</span>, earliest_date, <span class="st">" and "</span>, latest_date, <span class="st">" in the format of YYYYMMDD"</span>, <span class="st">"."</span>)</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(message)</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (endpoint <span class="sc">==</span> <span class="st">"animalandveterinary"</span>){</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span>query <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>,<span class="dv">6</span>)){</span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>        message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please choose query from 1 to 6."</span>)</span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>        <span class="fu">stop</span>(message)</span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, receive_date)</span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">2</span>){</span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"primary_reporter.exact"</span></span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">3</span>){</span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"type_of_information.exact"</span></span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">4</span>){</span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"animal.breed.breed_component.exact"</span></span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">5</span>){</span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"reaction.veddra_term_name.exact"</span></span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">6</span>){</span>
+<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"outcome.medical_status.exact"</span></span>
+<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
+<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (endpoint <span class="sc">==</span> <span class="st">"drug"</span>){</span>
+<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(<span class="sc">!</span>query <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)){</span>
+<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a>        message <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"ERROR: Please choose query from 1 to 2."</span>)</span>
+<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a>        <span class="fu">stop</span>(message)</span>
+<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, receive_date)</span>
+<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">2</span>){</span>
+<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a>        query_code <span class="ot">&lt;-</span> <span class="st">"primarysource.qualification"</span></span>
+<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a>        query_date_range <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">":["</span>, start_date, <span class="st">"+TO+"</span>, end_date, <span class="st">"]&amp;count="</span>, query_code)</span>
+<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a>    search <span class="ot">&lt;-</span> <span class="st">"?search="</span></span>
+<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a>    full_URL <span class="ot">&lt;-</span> <span class="fu">paste0</span>(base_URL, endpoint, event, search, receive_date, query_date_range)</span>
+<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a>    output_API <span class="ot">&lt;-</span> <span class="fu">fromJSON</span>(full_URL)</span>
+<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a>    query_data <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(output_API<span class="sc">$</span>results)</span>
+<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-69"><a href="#cb19-69" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (query <span class="sc">==</span> <span class="dv">1</span>){</span>
+<span id="cb19-70"><a href="#cb19-70" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a>      query_data <span class="ot">&lt;-</span> query_data <span class="sc">|&gt;</span></span>
+<span id="cb19-72"><a href="#cb19-72" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">receivedate_ymd =</span> <span class="fu">ymd</span>(query_data<span class="sc">$</span>time)) <span class="sc">|&gt;</span></span>
+<span id="cb19-73"><a href="#cb19-73" aria-hidden="true" tabindex="-1"></a>        <span class="fu">select</span>(receivedate_ymd, count) <span class="sc">|&gt;</span></span>
+<span id="cb19-74"><a href="#cb19-74" aria-hidden="true" tabindex="-1"></a>        <span class="fu">filter</span>(receivedate_ymd <span class="sc">&gt;=</span> <span class="fu">ymd</span>(start_date) <span class="sc">&amp;</span> receivedate_ymd <span class="sc">&lt;=</span> <span class="fu">ymd</span>(end_date))</span>
+<span id="cb19-75"><a href="#cb19-75" aria-hidden="true" tabindex="-1"></a>    } </span>
+<span id="cb19-76"><a href="#cb19-76" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-77"><a href="#cb19-77" aria-hidden="true" tabindex="-1"></a>    query_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"query_"</span>, endpoint, <span class="st">"_"</span>, query, <span class="st">"_"</span>, start_date, <span class="st">"_to_"</span>, end_date)</span>
+<span id="cb19-78"><a href="#cb19-78" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">setNames</span>(<span class="fu">list</span>(earliest_date, latest_date, query_data),</span>
+<span id="cb19-79"><a href="#cb19-79" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="st">"earliest_date"</span>, <span class="st">"latest_date"</span>, query_name)))</span>
+<span id="cb19-80"><a href="#cb19-80" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-81"><a href="#cb19-81" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-82"><a href="#cb19-82" aria-hidden="true" tabindex="-1"></a>}  </span>
+<span id="cb19-83"><a href="#cb19-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-84"><a href="#cb19-84" aria-hidden="true" tabindex="-1"></a><span class="co"># endpoint_API_query("animalandveterinary",1,20000101,20120101)</span></span>
+<span id="cb19-85"><a href="#cb19-85" aria-hidden="true" tabindex="-1"></a><span class="co"># endpoint_API_query("animalandveterinary",2,20000101,20120101)</span></span>
+<span id="cb19-86"><a href="#cb19-86" aria-hidden="true" tabindex="-1"></a><span class="co"># endpoint_API_query("animalandveterinary",3,20000101,20120101)</span></span>
+<span id="cb19-87"><a href="#cb19-87" aria-hidden="true" tabindex="-1"></a><span class="co"># endpoint_API_query("animalandveterinary",4,20000101,20120101)</span></span>
+<span id="cb19-88"><a href="#cb19-88" aria-hidden="true" tabindex="-1"></a><span class="co"># endpoint_API_query("animalandveterinary",5,20000101,20120101)</span></span>
+<span id="cb19-89"><a href="#cb19-89" aria-hidden="true" tabindex="-1"></a><span class="co"># endpoint_API_query("animalandveterinary",6,20000101,20120101)</span></span>
+<span id="cb19-90"><a href="#cb19-90" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb19-91"><a href="#cb19-91" aria-hidden="true" tabindex="-1"></a><span class="co"># endpoint_API_query("drug",1,20000101,20120101)</span></span>
+<span id="cb19-92"><a href="#cb19-92" aria-hidden="true" tabindex="-1"></a><span class="co"># endpoint_API_query("drug",2,20000101,20120101)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">2</span>,<span class="dv">20000101</span>,<span class="dv">20120101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="summarize-the-data" class="level1">
+<h1>Summarize the data</h1>
+<section id="who-reports-contingency-table" class="level2">
+<h2 class="anchored" data-anchor-id="who-reports-contingency-table">“Who reports” Contingency table</h2>
+<p>Below is the “Who reports” contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API endpoint “animalandveterinary”.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20220101</span>  </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20230101</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>who_reports_animal <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">2</span>,start_date,end_date)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>who_reports_animal <span class="ot">&lt;-</span> who_reports_animal[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">primarysource =</span> term)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>print_tibble_with_title <span class="ot">&lt;-</span> <span class="cf">function</span>(tbl, title) {</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(title, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(tbl)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print_tibble_with_title</span>(who_reports_animal, <span class="fu">paste0</span>(<span class="st">"'Who reports' Contingency Table: Primary Sources of Adverse Events Report from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">" queried from openFDA &lt;animalandveterinary&gt;"</span>, <span class="st">" endpoint."</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_animalandveterinary_2_20000101_to_20120101
+<pre><code>'Who reports' Contingency Table: Primary Sources of Adverse Events Report from 20220101 to 20230101 queried from openFDA &lt;animalandveterinary&gt; endpoint. 
 # A tibble: 7 × 2
-  term                            count
-  &lt;chr&gt;                           &lt;int&gt;
-1 Other                          302219
-2 Animal Owner                     6852
-3 Veterinarian                     5585
-4 Other Health Care Professional   1848
-5 Patient                            79
-6 Physician                           4
-7 Unknown                             4</code></pre>
+  primarysource                  count
+  &lt;chr&gt;                          &lt;int&gt;
+1 Animal Owner                   20597
+2 Other Health Care Professional 15937
+3 Veterinarian                   12437
+4 Other                           9234
+5 Patient                          136
+6 Unknown                           88
+7 Physician                          7</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">3</span>,<span class="dv">20000101</span>,<span class="dv">20120101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_animalandveterinary_3_20000101_to_20120101
-# A tibble: 10 × 2
-   term                                                                    count
-   &lt;chr&gt;                                                                   &lt;int&gt;
- 1 Safety Issue                                                           276528
- 2 Manufacturing/Product Defect Manufacturing Defect With no Adverse Eve…  35605
- 3 Lack Of Expected Effectiveness                                           3059
- 4 Both Safety And Lack Of Expected Effectiveness                           1150
- 5 Manufacturing/Product Defect Manufacturing Defect (Safety)                236
- 6 Manufacturing/Product Defect Manufacturing Defect (Both Safety And Lo…     76
- 7 Manufacturing/Product Defect Manufacturing Defect (Loee)                   57
- 8 Safety Issue (Clinical Studies)                                            28
- 9 Lack Of Expected Effectiveness (Clinical Studies)                           1
-10 Other                                                                       1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">4</span>,<span class="dv">20000101</span>,<span class="dv">20120101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Below is the “Who reports” contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API endpoint “drug”. The meanings of the values of variable term in the original output: 1 represents “Physician”, 2 represents “Pharmacist”, 3 represents “Other health professional”, 4 represents “Lawyer”, 5 represents “Consumer or non-health”. I replaced these number values with their corresponding meanings in the final contingency table and added a title corresponding to the queried date range.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20220101</span>  </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20230101</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>who_reports_drug <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"drug"</span>,<span class="dv">2</span>,start_date,end_date)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>who_reports_drug <span class="ot">&lt;-</span> who_reports_drug[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">primarysource =</span> <span class="fu">as.character</span>(term)) <span class="sc">|&gt;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">primarysource =</span> <span class="fu">case_when</span>(</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    term <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"Physician"</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    term <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">"Pharmacist"</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    term <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">"Other health professional"</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    term <span class="sc">==</span> <span class="dv">4</span> <span class="sc">~</span> <span class="st">"Lawyer"</span>,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    term <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">"Consumer or non-health"</span>,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(primarysource)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(primarysource, count)</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="fu">print_tibble_with_title</span>(who_reports_drug, <span class="fu">paste0</span>(<span class="st">"'Who reports' Contingency Table: Primary Sources of Adverse Events Report from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">" queried from openFDA &lt;drug&gt;"</span>, <span class="st">" endpoint."</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_animalandveterinary_4_20000101_to_20120101
-# A tibble: 100 × 2
-   term                    count
-   &lt;chr&gt;                   &lt;int&gt;
- 1 Crossbred Canine/dog    44279
- 2 Retriever - Labrador    27429
- 3 Domestic (unspecified)  22805
- 4 Dog (unknown)            9862
- 5 Retriever - Golden       8775
- 6 Shepherd Dog - German    7812
- 7 Chihuahua                5506
- 8 Dachshund (unspecified)  5383
- 9 Poodle (unspecified)     5322
-10 Boxer (German Boxer)     5294
-# ℹ 90 more rows</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">5</span>,<span class="dv">20000101</span>,<span class="dv">20120101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_animalandveterinary_5_20000101_to_20120101
-# A tibble: 100 × 2
-   term                                       count
-   &lt;chr&gt;                                      &lt;int&gt;
- 1 Vomiting                                   53808
- 2 INEFFECTIVE, HEARTWORM LARVAE              38771
- 3 Depression                                 33637
- 4 Anorexia                                   28391
- 5 Diarrhoea                                  20318
- 6 Accidental exposure                        18521
- 7 Death                                      18043
- 8 Lack of efficacy (endoparasite) - hookworm 11186
- 9 Ataxia                                     10766
-10 Elevated alanine aminotransferase (ALT)    10457
-# ℹ 90 more rows</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">6</span>,<span class="dv">20000101</span>,<span class="dv">20120101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1987-01-02"
-
-$latest_date
-[1] "2023-12-27"
-
-$query_animalandveterinary_6_20000101_to_20120101
-# A tibble: 6 × 2
-  term                   count
-  &lt;chr&gt;                  &lt;int&gt;
-1 Died                   28464
-2 Recovered/Normal        9130
-3 Outcome Unknown         5511
-4 Recovered with Sequela  1727
-5 Ongoing                 1065
-6 Euthanized               320</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">endpoint_API_query</span>(<span class="st">"drug"</span>,<span class="dv">1</span>,<span class="dv">20000101</span>,<span class="dv">20120101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1986-12-24"
-
-$latest_date
-[1] "2024-03-31"
-
-$query_drug_1_20000101_to_20120101
-# A tibble: 2,925 × 2
-   receivedate_ymd count
-   &lt;date&gt;          &lt;int&gt;
- 1 2000-02-09          1
- 2 2000-02-18          1
- 3 2000-02-23          1
- 4 2000-03-17          1
- 5 2000-03-21          1
- 6 2000-05-10          1
- 7 2000-05-17          1
- 8 2000-07-20          1
- 9 2000-09-06          1
-10 2000-11-02          1
-# ℹ 2,915 more rows</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">endpoint_API_query</span>(<span class="st">"drug"</span>,<span class="dv">2</span>,<span class="dv">20000101</span>,<span class="dv">20120101</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$earliest_date
-[1] "1986-12-24"
-
-$latest_date
-[1] "2024-03-31"
-
-$query_drug_2_20000101_to_20120101
+<pre><code>'Who reports' Contingency Table: Primary Sources of Adverse Events Report from 20220101 to 20230101 queried from openFDA &lt;drug&gt; endpoint. 
 # A tibble: 5 × 2
-   term  count
-  &lt;int&gt;  &lt;int&gt;
-1     5 948843
-2     1 656084
-3     3 420289
-4     2 156438
-5     4  82826</code></pre>
+  primarysource              count
+  &lt;chr&gt;                      &lt;int&gt;
+1 Consumer or non-health    659560
+2 Physician                 379589
+3 Other health professional 315619
+4 Pharmacist                 84545
+5 Lawyer                     67582</code></pre>
 </div>
 </div>
+</section>
 </section>
 
 </main>

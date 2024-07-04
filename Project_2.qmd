@@ -70,7 +70,7 @@ animal_API_reports_over_time <- function(start_date, end_date){
   }
 }  
 
-animal_API_reports_over_time(19940101,20060101)
+#animal_API_reports_over_time(19940101,20060101)
 
 ```
 
@@ -114,7 +114,7 @@ animal_API_who_reports <- function(start_date, end_date){
   }
 }  
 
-animal_API_who_reports(20090101, 20190202) 
+#animal_API_who_reports(20090101, 20190202) 
 
 ```
 
@@ -158,7 +158,7 @@ animal_API_types_of_reports <- function(start_date, end_date){
   }
 }  
 
-animal_API_types_of_reports(20090101, 20190202) 
+#animal_API_types_of_reports(20090101, 20190202) 
 
 ```
 
@@ -202,7 +202,7 @@ animal_API_animal_breeds <- function(start_date, end_date){
   }
 }  
 
-animal_API_animal_breeds(20110101, 20190202) 
+#animal_API_animal_breeds(20110101, 20190202) 
 
 ```
 
@@ -246,7 +246,7 @@ animal_API_reactions <- function(start_date, end_date){
   }
 }  
 
-animal_API_reactions(20180101, 20190202) 
+#animal_API_reactions(20180101, 20190202) 
 
 ```
 
@@ -291,7 +291,7 @@ animal_API_outcomes <- function(start_date, end_date){
   }
 }  
 
-animal_API_outcomes(20180101, 20190901) 
+#animal_API_outcomes(20180101, 20190901) 
 
 ```
 
@@ -344,7 +344,7 @@ drug_API_reports_over_time <- function(start_date, end_date){
   }
 }  
 
-drug_API_reports_over_time(20040101,20160101)
+#drug_API_reports_over_time(20040101,20160101)
 
 ```
 
@@ -389,7 +389,7 @@ drug_API_who_reports <- function(start_date, end_date){
 }  
 
 # 1: Physician; 2: Pharmacist; 3: Other health professional; 4: Lawyer; 5: Consumer or non-health professional
-drug_API_who_reports(20040101, 20240331)
+#drug_API_who_reports(20040101, 20240331)
 
 ```
 
@@ -483,15 +483,70 @@ endpoint_API_query <- function(endpoint, query, start_date, end_date){
   }
 }  
 
-endpoint_API_query("animalandveterinary",1,20000101,20120101)
-endpoint_API_query("animalandveterinary",2,20000101,20120101)
-endpoint_API_query("animalandveterinary",3,20000101,20120101)
-endpoint_API_query("animalandveterinary",4,20000101,20120101)
-endpoint_API_query("animalandveterinary",5,20000101,20120101)
-endpoint_API_query("animalandveterinary",6,20000101,20120101)
+# endpoint_API_query("animalandveterinary",1,20000101,20120101)
+# endpoint_API_query("animalandveterinary",2,20000101,20120101)
+# endpoint_API_query("animalandveterinary",3,20000101,20120101)
+# endpoint_API_query("animalandveterinary",4,20000101,20120101)
+# endpoint_API_query("animalandveterinary",5,20000101,20120101)
+# endpoint_API_query("animalandveterinary",6,20000101,20120101)
+# 
+# endpoint_API_query("drug",1,20000101,20120101)
+# endpoint_API_query("drug",2,20000101,20120101)
 
-endpoint_API_query("drug",1,20000101,20120101)
-endpoint_API_query("drug",2,20000101,20120101)
+```
+
+# Summarize the data
+
+## "Who reports" Contingency table
+
+Below is the "Who reports" contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API endpoint "animalandveterinary". 
+
+```{r}
+
+start_date <- 20220101  
+end_date <- 20230101
+who_reports_animal <- endpoint_API_query("animalandveterinary",2,start_date,end_date)
+
+who_reports_animal <- who_reports_animal[[3]] |>
+  rename(primarysource = term)
+
+print_tibble_with_title <- function(tbl, title) {
+  cat(title, "\n")
+  print(tbl)
+}
+
+print_tibble_with_title(who_reports_animal, paste0("'Who reports' Contingency Table: Primary Sources of Adverse Events Report from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary>", " endpoint."))
+
+```
+
+Below is the "Who reports" contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API endpoint "drug". The meanings of the values of variable term in the original output: 1 represents "Physician", 2 represents "Pharmacist", 3 represents "Other health professional", 4 represents "Lawyer", 5 represents "Consumer or non-health". I replaced these number values with their corresponding meanings in the final contingency table and added a title corresponding to the queried date range. 
+
+```{r}
+
+start_date <- 20220101  
+end_date <- 20230101 
+who_reports_drug <- endpoint_API_query("drug",2,start_date,end_date)
+
+who_reports_drug <- who_reports_drug[[3]] |>
+  mutate(primarysource = as.character(term)) |>
+  mutate(primarysource = case_when(
+    term == 1 ~ "Physician",
+    term == 2 ~ "Pharmacist",
+    term == 3 ~ "Other health professional",
+    term == 4 ~ "Lawyer",
+    term == 5 ~ "Consumer or non-health",
+    TRUE ~ as.character(primarysource)
+  )) |>
+  select(primarysource, count)
+
+print_tibble_with_title(who_reports_drug, paste0("'Who reports' Contingency Table: Primary Sources of Adverse Events Report from ", start_date, " to ", end_date, " queried from openFDA <drug>", " endpoint."))
+
+```
+
+
+
+
+```{r}
 
 ```
 
