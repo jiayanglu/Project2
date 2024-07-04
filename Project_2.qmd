@@ -61,13 +61,11 @@ animal_API_reports_over_time <- function(start_date, end_date){
     
     reports_over_time_data <- reports_over_time_data |>
       mutate(receivedate_ymd = ymd(reports_over_time_data$time)) |>
-      select(receivedate_ymd, count)
-    
-    query_reports_over_time_data <- reports_over_time_data |>
+      select(receivedate_ymd, count) |>
       filter(receivedate_ymd >= ymd(start_date) & receivedate_ymd <= ymd(end_date))
     
     query_name <- paste0("query_", start_date, "_to_", end_date)
-    return(setNames(list(earliest_date, latest_date, query_reports_over_time_data),
+    return(setNames(list(earliest_date, latest_date, reports_over_time_data),
                     c("earliest_date", "latest_date", query_name)))
   }
 }  
@@ -336,13 +334,11 @@ drug_API_reports_over_time <- function(start_date, end_date){
     
     reports_over_time_data <- reports_over_time_data |>
       mutate(receivedate_ymd = ymd(reports_over_time_data$time)) |>
-      select(receivedate_ymd, count)
-    
-    query_reports_over_time_data <- reports_over_time_data |>
+      select(receivedate_ymd, count) |>
       filter(receivedate_ymd >= ymd(start_date) & receivedate_ymd <= ymd(end_date))
     
     query_name <- paste0("query_", start_date, "_to_", end_date)
-    return(setNames(list(earliest_date, latest_date, query_reports_over_time_data),
+    return(setNames(list(earliest_date, latest_date, reports_over_time_data),
                     c("earliest_date", "latest_date", query_name)))
     
   }
@@ -396,3 +392,106 @@ drug_API_who_reports <- function(start_date, end_date){
 drug_API_who_reports(20040101, 20240331)
 
 ```
+
+# A universal query code chunk
+
+This is a universal query code chunk to query from either "animalandveterinary" or "drug" in openFDA API endpoint. There are total 6 different queries to get 6 different types of data from "animalandveterinary" endpoint, which are "Reports over time"(query=1), "Who reports"(query=2), "Types of report"(query=3), "Animal breeds"(query=4), "Reactions"(query=5), and "Outcomes"(query=6). There are total 2 different queries to get 2 different types of data from "drug" endpoint, which are "Reports over time"(query=1), "Who reports"(query=2).
+
+
+```{r}
+
+endpoint_API_query <- function(endpoint, query, start_date, end_date){
+  
+  if (!endpoint %in% c("animalandveterinary", "drug")){
+    message <- paste0("ERROR: Please choose endpoint 'animalandveterinary' or 'drug'.")
+    stop(message)
+  }
+  
+  base_URL <- "https://api.fda.gov/"
+  event <- "/event.json"
+  count <- "?count="
+  receive_date <- if (endpoint == "drug") "receivedate" else "original_receive_date"
+  full_URL <- paste0(base_URL, endpoint, event, count, receive_date)
+  
+  output_API <- fromJSON(full_URL)
+  receivedate_data <- as_tibble(output_API$results)  
+  
+  earliest_date <- min(ymd(receivedate_data$time))
+  latest_date <- max(ymd(receivedate_data$time))
+  
+  if (ymd(start_date) < earliest_date | ymd(end_date) > latest_date){
+    
+    message <- paste0("ERROR: Please pass a date between ", earliest_date, " and ", latest_date, " in the format of YYYYMMDD", ".")
+    stop(message)
+    
+  } else {
+    
+    if (endpoint == "animalandveterinary"){
+      
+      if (!query %in% c(1,2,3,4,5,6)){
+        message <- paste0("ERROR: Please choose query from 1 to 6.")
+        stop(message)
+      } else if (query == 1){
+        query_date_range <- paste0(":[", start_date, "+TO+", end_date, "]&count=", receive_date)
+      } else if (query == 2){
+        query_code <- "primary_reporter.exact"
+        query_date_range <- paste0(":[", start_date, "+TO+", end_date, "]&count=", query_code)
+      } else if (query == 3){
+        query_code <- "type_of_information.exact"
+        query_date_range <- paste0(":[", start_date, "+TO+", end_date, "]&count=", query_code)
+      } else if (query == 4){
+        query_code <- "animal.breed.breed_component.exact"
+        query_date_range <- paste0(":[", start_date, "+TO+", end_date, "]&count=", query_code)
+      } else if (query == 5){
+        query_code <- "reaction.veddra_term_name.exact"
+        query_date_range <- paste0(":[", start_date, "+TO+", end_date, "]&count=", query_code)
+      } else if (query == 6){
+        query_code <- "outcome.medical_status.exact"
+        query_date_range <- paste0(":[", start_date, "+TO+", end_date, "]&count=", query_code)
+      }
+    } else if (endpoint == "drug"){
+      
+      if(!query %in% c(1,2)){
+        message <- paste0("ERROR: Please choose query from 1 to 2.")
+        stop(message)
+      } else if (query == 1){
+        query_date_range <- paste0(":[", start_date, "+TO+", end_date, "]&count=", receive_date)
+      } else if (query == 2){
+        query_code <- "primarysource.qualification"
+        query_date_range <- paste0(":[", start_date, "+TO+", end_date, "]&count=", query_code)
+      }
+    }
+    
+    search <- "?search="
+    full_URL <- paste0(base_URL, endpoint, event, search, receive_date, query_date_range)
+    
+    output_API <- fromJSON(full_URL)
+    query_data <- as_tibble(output_API$results)
+    
+    if (query == 1){
+      
+      query_data <- query_data |>
+        mutate(receivedate_ymd = ymd(query_data$time)) |>
+        select(receivedate_ymd, count) |>
+        filter(receivedate_ymd >= ymd(start_date) & receivedate_ymd <= ymd(end_date))
+    } 
+    
+    query_name <- paste0("query_", endpoint, "_", query, "_", start_date, "_to_", end_date)
+    return(setNames(list(earliest_date, latest_date, query_data),
+                    c("earliest_date", "latest_date", query_name)))
+    
+  }
+}  
+
+endpoint_API_query("animalandveterinary",1,20000101,20120101)
+endpoint_API_query("animalandveterinary",2,20000101,20120101)
+endpoint_API_query("animalandveterinary",3,20000101,20120101)
+endpoint_API_query("animalandveterinary",4,20000101,20120101)
+endpoint_API_query("animalandveterinary",5,20000101,20120101)
+endpoint_API_query("animalandveterinary",6,20000101,20120101)
+
+endpoint_API_query("drug",1,20000101,20120101)
+endpoint_API_query("drug",2,20000101,20120101)
+
+```
+
