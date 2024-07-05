@@ -491,8 +491,8 @@ The following object is masked from 'package:shiny':
 </div>
 </section>
 </section>
-<section id="a-universal-query-code-chunk" class="level1">
-<h1>A universal query code chunk</h1>
+<section id="general-query-code" class="level1">
+<h1>General query code</h1>
 <p>This is a universal query code chunk to query from either “animalandveterinary” or “drug” in openFDA API endpoint. There are total 6 different queries to get 6 different types of data from “animalandveterinary” endpoint, which are “Reports over time”(query=1), “Who reports”(query=2), “Types of report”(query=3), “Animal breeds”(query=4), “Reactions”(query=5), and “Outcomes”(query=6). There are total 2 different queries to get 2 different types of data from “drug” endpoint, which are “Reports over time”(query=1), “Who reports”(query=2).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>endpoint_API_query <span class="ot">&lt;-</span> <span class="cf">function</span>(endpoint, query, start_date, end_date){</span>
@@ -591,9 +591,11 @@ The following object is masked from 'package:shiny':
 </section>
 <section id="summarize-the-data" class="level1">
 <h1>Summarize the data</h1>
-<section id="who-reports-contingency-table" class="level2">
-<h2 class="anchored" data-anchor-id="who-reports-contingency-table">“Who reports” Contingency table</h2>
-<p>Below is the “Who reports” contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API endpoint “animalandveterinary”.</p>
+<section id="who-reports-contingency-tables" class="level2">
+<h2 class="anchored" data-anchor-id="who-reports-contingency-tables">“Who reports” Contingency tables</h2>
+<section id="openfda-api-animalandveterinary-endpoint" class="level3">
+<h3 class="anchored" data-anchor-id="openfda-api-animalandveterinary-endpoint">openFDA API “animalandveterinary” endpoint</h3>
+<p>Below is the “Who reports” contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API “animalandveterinary” endpoint .</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20220101</span>  </span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20230101</span></span>
@@ -607,9 +609,9 @@ The following object is masked from 'package:shiny':
 <span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(tbl)</span>
 <span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print_tibble_with_title</span>(who_reports_animal, <span class="fu">paste0</span>(<span class="st">"'Who reports' Contingency Table: Primary Sources of Adverse Events Report from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">" queried from openFDA &lt;animalandveterinary&gt;"</span>, <span class="st">" endpoint."</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="fu">print_tibble_with_title</span>(who_reports_animal, <span class="fu">paste0</span>(<span class="st">"&lt;Who reports&gt; Contingency Table: Primary Sources of Adverse Events Report from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">" queried from openFDA &lt;animalandveterinary&gt; endpoint."</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>'Who reports' Contingency Table: Primary Sources of Adverse Events Report from 20220101 to 20230101 queried from openFDA &lt;animalandveterinary&gt; endpoint. 
+<pre><code>&lt;Who reports&gt; Contingency Table: Primary Sources of Adverse Events Report from 20220101 to 20230101 queried from openFDA &lt;animalandveterinary&gt; endpoint. 
 # A tibble: 7 × 2
   primarysource                  count
   &lt;chr&gt;                          &lt;int&gt;
@@ -622,7 +624,10 @@ The following object is masked from 'package:shiny':
 7 Physician                          7</code></pre>
 </div>
 </div>
-<p>Below is the “Who reports” contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API endpoint “drug”. The meanings of the values of variable term in the original output: 1 represents “Physician”, 2 represents “Pharmacist”, 3 represents “Other health professional”, 4 represents “Lawyer”, 5 represents “Consumer or non-health”. I replaced these number values with their corresponding meanings in the final contingency table and added a title corresponding to the queried date range.</p>
+</section>
+<section id="openfda-api-drug-endpoint" class="level3">
+<h3 class="anchored" data-anchor-id="openfda-api-drug-endpoint">openFDA API “drug” endpoint</h3>
+<p>Below is the “Who reports” contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API “drug” endpoint. The meanings of the values of variable term in the original output: 1 represents “Physician”, 2 represents “Pharmacist”, 3 represents “Other health professional”, 4 represents “Lawyer”, 5 represents “Consumer or non-health”. I replaced these number values with their corresponding meanings in the final contingency table and added a title corresponding to the queried date range.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20220101</span>  </span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20230101</span> </span>
@@ -640,9 +645,9 @@ The following object is masked from 'package:shiny':
 <span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
 <span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(primarysource, count)</span>
 <span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="fu">print_tibble_with_title</span>(who_reports_drug, <span class="fu">paste0</span>(<span class="st">"'Who reports' Contingency Table: Primary Sources of Adverse Events Report from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">" queried from openFDA &lt;drug&gt;"</span>, <span class="st">" endpoint."</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="fu">print_tibble_with_title</span>(who_reports_drug, <span class="fu">paste0</span>(<span class="st">"&lt;Who reports&gt; Contingency Table: Primary Sources of Adverse Events Report from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">" queried from openFDA &lt;drug&gt; endpoint."</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>'Who reports' Contingency Table: Primary Sources of Adverse Events Report from 20220101 to 20230101 queried from openFDA &lt;drug&gt; endpoint. 
+<pre><code>&lt;Who reports&gt; Contingency Table: Primary Sources of Adverse Events Report from 20220101 to 20230101 queried from openFDA &lt;drug&gt; endpoint. 
 # A tibble: 5 × 2
   primarysource              count
   &lt;chr&gt;                      &lt;int&gt;
@@ -654,6 +659,311 @@ The following object is masked from 'package:shiny':
 </div>
 </div>
 </section>
+</section>
+<section id="type-of-report-numerical-summaries" class="level2">
+<h2 class="anchored" data-anchor-id="type-of-report-numerical-summaries">“Type of Report” numerical summaries</h2>
+<p>This is the “Type of Report” numerical summaries for percentages of the types of adverse events across 10 years (2013-2022) queried from openFDA API “animalandveterinary” endpoint.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2013</span><span class="sc">:</span><span class="dv">2022</span>){</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  start_date <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"0101"</span>))</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  end_date <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"1231"</span>))</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  type_of_report_animal <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">3</span>,start_date,end_date)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  type_of_report_animal <span class="ot">&lt;-</span> type_of_report_animal[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">reaction =</span> term) <span class="sc">|&gt;</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(reaction, percentage, count)</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"type_of_report_animal_"</span>, i), type_of_report_animal)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>data_frames <span class="ot">&lt;-</span> <span class="fu">mget</span>(<span class="fu">paste0</span>(<span class="st">"type_of_report_animal_"</span>, <span class="dv">2013</span><span class="sc">:</span><span class="dv">2022</span>))</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>type_of_report_animal_2013_to_2022 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(data_frames, <span class="at">.id =</span> <span class="st">"source_year"</span>) </span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>type_of_report_animal_2013_to_2022_stat <span class="ot">&lt;-</span> type_of_report_animal_2013_to_2022 <span class="sc">|&gt;</span></span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(reaction) <span class="sc">|&gt;</span></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(percentage, <span class="at">.fns =</span> <span class="fu">list</span>(</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>      <span class="st">"mean_percentage"</span> <span class="ot">=</span> mean,</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>      <span class="st">"median_percentage"</span> <span class="ot">=</span> median,</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">"var_percentage"</span> <span class="ot">=</span> var,</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>      <span class="st">"sd_percentage"</span> <span class="ot">=</span> sd,</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>      <span class="st">"IQR_percentage"</span> <span class="ot">=</span> IQR</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>      ), <span class="at">.names =</span> <span class="st">"{.fn}_{.col}"</span>))</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20130101</span></span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"Summary statistics for percentage of types of adverse events from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">" queried from openFDA &lt;animalandveterinary&gt; endpoint."</span> )</span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(type_of_report_animal_2013_to_2022_stat, </span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption=</span> name,</span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>             <span class="at">digits=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<caption>Summary statistics for percentage of types of adverse events from 20130101 to 20221231 queried from openFDA <animalandveterinary> endpoint.</animalandveterinary></caption>
+<colgroup>
+<col style="width: 35%">
+<col style="width: 13%">
+<col style="width: 14%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">reaction</th>
+<th style="text-align: right;">mean_percentage_percentage</th>
+<th style="text-align: right;">median_percentage_percentage</th>
+<th style="text-align: right;">var_percentage_percentage</th>
+<th style="text-align: right;">sd_percentage_percentage</th>
+<th style="text-align: right;">IQR_percentage_percentage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Both Safety And LOEE Issue (Clinical Studies)</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Both Safety And Lack Of Expected Effectiveness</td>
+<td style="text-align: right;">5.21</td>
+<td style="text-align: right;">5.23</td>
+<td style="text-align: right;">2.42</td>
+<td style="text-align: right;">1.56</td>
+<td style="text-align: right;">2.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lack Of Expected Effectiveness</td>
+<td style="text-align: right;">24.60</td>
+<td style="text-align: right;">25.22</td>
+<td style="text-align: right;">24.54</td>
+<td style="text-align: right;">4.95</td>
+<td style="text-align: right;">4.43</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lack Of Expected Effectiveness (Clinical Studies)</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Manufacturing/Product Defect Manufacturing Defect (Both Safety And Loee)</td>
+<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">0.11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Manufacturing/Product Defect Manufacturing Defect (Loee)</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">0.20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Manufacturing/Product Defect Manufacturing Defect (Safety)</td>
+<td style="text-align: right;">1.35</td>
+<td style="text-align: right;">1.44</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.54</td>
+<td style="text-align: right;">0.69</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Manufacturing/Product Defect Manufacturing Defect With no Adverse Events</td>
+<td style="text-align: right;">11.43</td>
+<td style="text-align: right;">11.12</td>
+<td style="text-align: right;">1.16</td>
+<td style="text-align: right;">1.08</td>
+<td style="text-align: right;">1.27</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Other</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Safety Issue</td>
+<td style="text-align: right;">56.90</td>
+<td style="text-align: right;">56.02</td>
+<td style="text-align: right;">36.95</td>
+<td style="text-align: right;">6.08</td>
+<td style="text-align: right;">8.18</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Safety Issue (Clinical Studies)</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="outcomes-numerical-summaries" class="level2">
+<h2 class="anchored" data-anchor-id="outcomes-numerical-summaries">“Outcomes” numerical summaries</h2>
+<p>This is the “Outcomes” numerical summaries for percentages of medical status outcomes across 10 years (2013-2022) queried from openFDA API “animalandveterinary” endpoint.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2013</span><span class="sc">:</span><span class="dv">2022</span>){</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  start_date <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"0101"</span>))</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  end_date <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"1231"</span>))</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  outcomes_animal <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">6</span>,start_date,end_date)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  outcomes_animal <span class="ot">&lt;-</span> outcomes_animal[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">medical.status.outcome =</span> term) <span class="sc">|&gt;</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(medical.status.outcome, percentage, count)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"outcomes_animal_"</span>, i), outcomes_animal)</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>data_frames <span class="ot">&lt;-</span> <span class="fu">mget</span>(<span class="fu">paste0</span>(<span class="st">"outcomes_animal_"</span>, <span class="dv">2013</span><span class="sc">:</span><span class="dv">2022</span>))</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>outcomes_animal_2013_to_2022 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(data_frames, <span class="at">.id =</span> <span class="st">"source_year"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(medical.status.outcome) <span class="sc">|&gt;</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(percentage, <span class="at">.fns =</span> <span class="fu">list</span>(</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>      <span class="st">"mean_percentage"</span> <span class="ot">=</span> mean,</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>      <span class="st">"median_percentage"</span> <span class="ot">=</span> median,</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>      <span class="st">"var_percentage"</span> <span class="ot">=</span> var,</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>      <span class="st">"sd_percentage"</span> <span class="ot">=</span> sd,</span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">"IQR_percentage"</span> <span class="ot">=</span> IQR</span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>      ), <span class="at">.names =</span> <span class="st">"{.fn}_{.col}"</span>))</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20130101</span></span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"Summary statistics for percentage by medical status outcome from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">" queried from openFDA &lt;animalandveterinary&gt; endpoint."</span> )</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(outcomes_animal_2013_to_2022, </span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption=</span> name,</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>             <span class="at">digits=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<caption>Summary statistics for percentage by medical status outcome from 20130101 to 20221231 queried from openFDA <animalandveterinary> endpoint.</animalandveterinary></caption>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 17%">
+<col style="width: 18%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">medical.status.outcome</th>
+<th style="text-align: right;">mean_percentage_percentage</th>
+<th style="text-align: right;">median_percentage_percentage</th>
+<th style="text-align: right;">var_percentage_percentage</th>
+<th style="text-align: right;">sd_percentage_percentage</th>
+<th style="text-align: right;">IQR_percentage_percentage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Died</td>
+<td style="text-align: right;">3.27</td>
+<td style="text-align: right;">3.28</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">0.19</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Euthanized</td>
+<td style="text-align: right;">1.94</td>
+<td style="text-align: right;">1.92</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">0.16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ongoing</td>
+<td style="text-align: right;">22.28</td>
+<td style="text-align: right;">23.56</td>
+<td style="text-align: right;">91.47</td>
+<td style="text-align: right;">9.56</td>
+<td style="text-align: right;">14.45</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Outcome Unknown</td>
+<td style="text-align: right;">35.69</td>
+<td style="text-align: right;">37.30</td>
+<td style="text-align: right;">14.11</td>
+<td style="text-align: right;">3.76</td>
+<td style="text-align: right;">3.43</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Recovered with Sequela</td>
+<td style="text-align: right;">4.04</td>
+<td style="text-align: right;">3.92</td>
+<td style="text-align: right;">4.70</td>
+<td style="text-align: right;">2.17</td>
+<td style="text-align: right;">1.35</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Recovered/Normal</td>
+<td style="text-align: right;">32.79</td>
+<td style="text-align: right;">30.25</td>
+<td style="text-align: right;">87.07</td>
+<td style="text-align: right;">9.33</td>
+<td style="text-align: right;">10.99</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="plots" class="level1">
+<h1>Plots</h1>
+<p>Based on the “Type of Report” numerical summaries, the distributions of percentage seem very different among types of reports. Let’s visualize the distributions with box plots.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(type_of_report_animal_2013_to_2022, </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">aes</span>(reaction,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                    percentage,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">color=</span>reaction)) <span class="sc">+</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add the box plot layer.</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span> </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Jitter the points to add a little more info to the boxplot.</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>() <span class="sc">+</span> </span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add labels to the axes.</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">name =</span> <span class="st">"Reaction"</span>, <span class="at">labels =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">11</span>]) <span class="sc">+</span> </span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Percentage"</span>) <span class="sc">+</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add a title.</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Percentage of Types of Adverse Events from 20130101 to 20221231"</span>) <span class="sc">+</span> </span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove the legend because it isn't needed.</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>)) <span class="sc">+</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="st">"Reaction"</span>)</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot.</span></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>plot1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Project_2_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 
 </main>
