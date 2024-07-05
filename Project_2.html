@@ -67,6 +67,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="Project_2_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="Project_2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="Project_2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="Project_2_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<script src="Project_2_files/libs/plotly-binding-4.10.4/plotly.js"></script>
+
+<script src="Project_2_files/libs/typedarray-0.1/typedarray.min.js"></script>
+
+<script src="Project_2_files/libs/jquery-3.5.1/jquery.min.js"></script>
+
+<link href="Project_2_files/libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+
+<script src="Project_2_files/libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+
+<link href="Project_2_files/libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+
+<script src="Project_2_files/libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
 
 
 </head>
@@ -595,7 +611,7 @@ The following object is masked from 'package:shiny':
 <h2 class="anchored" data-anchor-id="who-reports-contingency-tables">“Who reports” Contingency tables</h2>
 <section id="openfda-api-animalandveterinary-endpoint" class="level3">
 <h3 class="anchored" data-anchor-id="openfda-api-animalandveterinary-endpoint">openFDA API “animalandveterinary” endpoint</h3>
-<p>Below is the “Who reports” contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API “animalandveterinary” endpoint .</p>
+<p>Below is the “Who reports” contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API “animalandveterinary” endpoint.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20220101</span>  </span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20230101</span></span>
@@ -837,24 +853,26 @@ The following object is masked from 'package:shiny':
 <span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>data_frames <span class="ot">&lt;-</span> <span class="fu">mget</span>(<span class="fu">paste0</span>(<span class="st">"outcomes_animal_"</span>, <span class="dv">2013</span><span class="sc">:</span><span class="dv">2022</span>))</span>
 <span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>outcomes_animal_2013_to_2022 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(data_frames, <span class="at">.id =</span> <span class="st">"source_year"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(medical.status.outcome) <span class="sc">|&gt;</span></span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(percentage, <span class="at">.fns =</span> <span class="fu">list</span>(</span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>      <span class="st">"mean_percentage"</span> <span class="ot">=</span> mean,</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>      <span class="st">"median_percentage"</span> <span class="ot">=</span> median,</span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>      <span class="st">"var_percentage"</span> <span class="ot">=</span> var,</span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>      <span class="st">"sd_percentage"</span> <span class="ot">=</span> sd,</span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">"IQR_percentage"</span> <span class="ot">=</span> IQR</span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>      ), <span class="at">.names =</span> <span class="st">"{.fn}_{.col}"</span>))</span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20130101</span></span>
-<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
-<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"Summary statistics for percentage by medical status outcome from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">" queried from openFDA &lt;animalandveterinary&gt; endpoint."</span> )</span>
-<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(outcomes_animal_2013_to_2022, </span>
-<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption=</span> name,</span>
-<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>             <span class="at">digits=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>outcomes_animal_2013_to_2022 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(data_frames, <span class="at">.id =</span> <span class="st">"source_year"</span>)</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>outcomes_animal_2013_to_2022_stat <span class="ot">&lt;-</span> outcomes_animal_2013_to_2022 <span class="sc">|&gt;</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(medical.status.outcome) <span class="sc">|&gt;</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(percentage, <span class="at">.fns =</span> <span class="fu">list</span>(</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>      <span class="st">"mean_percentage"</span> <span class="ot">=</span> mean,</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>      <span class="st">"median_percentage"</span> <span class="ot">=</span> median,</span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">"var_percentage"</span> <span class="ot">=</span> var,</span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>      <span class="st">"sd_percentage"</span> <span class="ot">=</span> sd,</span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>      <span class="st">"IQR_percentage"</span> <span class="ot">=</span> IQR</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>      ), <span class="at">.names =</span> <span class="st">"{.fn}_{.col}"</span>))</span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20130101</span></span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"Summary statistics for percentage by medical status outcome from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">" queried from openFDA &lt;animalandveterinary&gt; endpoint."</span> )</span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(outcomes_animal_2013_to_2022_stat, </span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption=</span> name,</span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>             <span class="at">digits=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <caption>Summary statistics for percentage by medical status outcome from 20130101 to 20221231 queried from openFDA <animalandveterinary> endpoint.</animalandveterinary></caption>
@@ -933,37 +951,174 @@ The following object is masked from 'package:shiny':
 </section>
 <section id="plots" class="level1">
 <h1>Plots</h1>
-<p>Based on the “Type of Report” numerical summaries, the distributions of percentage seem very different among types of reports. Let’s visualize the distributions with box plots.</p>
+<section id="plot-1" class="level2">
+<h2 class="anchored" data-anchor-id="plot-1">Plot 1</h2>
+<p>reports over time</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(type_of_report_animal_2013_to_2022, </span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">aes</span>(reaction,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                    percentage,</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">color=</span>reaction)) <span class="sc">+</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add the box plot layer.</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span> </span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Jitter the points to add a little more info to the boxplot.</span></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>() <span class="sc">+</span> </span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add labels to the axes.</span></span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">name =</span> <span class="st">"Reaction"</span>, <span class="at">labels =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">11</span>]) <span class="sc">+</span> </span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Percentage"</span>) <span class="sc">+</span></span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add a title.</span></span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Percentage of Types of Adverse Events from 20130101 to 20221231"</span>) <span class="sc">+</span> </span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove the legend because it isn't needed.</span></span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>)) <span class="sc">+</span></span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="st">"Reaction"</span>)</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot.</span></span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>plot1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">2000</span><span class="sc">:</span><span class="dv">2020</span>){</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  start_date <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"0101"</span>))</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  end_date <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"1231"</span>))</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  reports_over_time_animal <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">1</span>,start_date,end_date)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  reports_over_time_animal_stat <span class="ot">&lt;-</span> reports_over_time_animal[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">count =</span> <span class="fu">sum</span>(count)) <span class="sc">|&gt;</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">year =</span> i) <span class="sc">|&gt;</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(year, count)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"reports_over_time_animal_stat_"</span>, i), reports_over_time_animal_stat)</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>data_frames <span class="ot">&lt;-</span> <span class="fu">mget</span>(<span class="fu">paste0</span>(<span class="st">"reports_over_time_animal_stat_"</span>, <span class="dv">2000</span><span class="sc">:</span><span class="dv">2020</span>))</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>reports_over_time_animal_1990_to_2020 <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(data_frames, <span class="at">.id =</span> <span class="st">"source_year"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.character</span>(year))</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(reports_over_time_animal_1990_to_2020, </span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>                <span class="fu">aes</span>(year,</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>                    count)) <span class="sc">+</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add the box plot layer.</span></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Jitter the points to add a little more info to the boxplot.</span></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span> </span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Counts"</span>) <span class="sc">+</span></span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add a title.</span></span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Plot 1: Counts of Received Adverse events Reports from 2000 to 2020"</span>) <span class="sc">+</span></span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))  </span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> plotly<span class="sc">::</span><span class="fu">ggplotly</span>(plot1, <span class="at">tooltip =</span> <span class="fu">c</span>(<span class="st">"year"</span>, <span class="st">"count"</span>), <span class="at">dynamicTicks =</span> <span class="cn">TRUE</span>, <span class="at">hoverinfo =</span> <span class="st">"y"</span>)</span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot.</span></span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>plot1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-c2f299877751ab5083c4" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-c2f299877751ab5083c4">{"x":{"data":[{"x":["2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020"],"y":[18146,15186,12823,13453,20432,20536,22671,27662,34260,39946,42692,48923,66429,69326,67448,71166,73861,77015,71037,72458,68341],"text":["year: 2000<br />count: 18146","year: 2001<br />count: 15186","year: 2002<br />count: 12823","year: 2003<br />count: 13453","year: 2004<br />count: 20432","year: 2005<br />count: 20536","year: 2006<br />count: 22671","year: 2007<br />count: 27662","year: 2008<br />count: 34260","year: 2009<br />count: 39946","year: 2010<br />count: 42692","year: 2011<br />count: 48923","year: 2012<br />count: 66429","year: 2013<br />count: 69326","year: 2014<br />count: 67448","year: 2015<br />count: 71166","year: 2016<br />count: 73861","year: 2017<br />count: 77015","year: 2018<br />count: 71037","year: 2019<br />count: 72458","year: 2020<br />count: 68341"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,255,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(0,0,255,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.762557077625573,"r":7.3059360730593621,"b":42.22428554020037,"l":54.794520547945211},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"Plot 1: Counts of Received Adverse events Reports from 2000 to 2020","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"category","autorange":true,"range":[0.40000000000000002,21.600000000000001],"tickmode":"auto","ticktext":["2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,14.999999999999998,15.999999999999998,17,18,19,20,21],"categoryorder":"array","categoryarray":["2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-45,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y","title":{"text":"Year","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":true,"range":[9613.3999999999996,80224.600000000006],"tickmode":"auto","ticktext":["20000","40000","60000","80000"],"tickvals":[20000,40000,60000,80000],"categoryorder":"array","categoryarray":["20000","40000","60000","80000"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":{"text":"Counts","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"1cf47347369d":{"x":{},"y":{},"type":"scatter"}},"cur_data":"1cf47347369d","visdat":{"1cf47347369d":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="plot-2" class="level2">
+<h2 class="anchored" data-anchor-id="plot-2">Plot 2</h2>
+<p>Who reports</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20100101</span>  </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20200101</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>who_reports_animal <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">2</span>,start_date,end_date)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>who_reports_animal <span class="ot">&lt;-</span> who_reports_animal[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">primarysource =</span> term) <span class="sc">|&gt;</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(primarysource, percentage, count)</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'plotly' was built under R version 4.3.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'plotly'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:ggplot2':
+
+    last_plot</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:stats':
+
+    filter</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:graphics':
+
+    layout</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>plot2 <span class="ot">&lt;-</span> plotly<span class="sc">::</span><span class="fu">plot_ly</span>(who_reports_animal, <span class="at">labels =</span> <span class="sc">~</span>primarysource, <span class="at">values =</span> <span class="sc">~</span>count, <span class="at">type =</span> <span class="st">'pie'</span>,</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">textinfo =</span> <span class="st">'label+percent+value'</span>, </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">hoverinfo =</span> <span class="st">'text'</span>,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">text =</span> <span class="sc">~</span><span class="fu">paste</span>(primarysource, <span class="st">"&lt;br&gt;"</span>, <span class="st">"Count: "</span>, count, <span class="st">"&lt;br&gt;"</span>, <span class="st">"Percentage: "</span>, <span class="fu">round</span>(percentage, <span class="dv">2</span>), <span class="st">"%"</span>),</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">marker =</span> <span class="fu">list</span>(<span class="at">line =</span> <span class="fu">list</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">width =</span> <span class="dv">1</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">layout</span>(<span class="at">title =</span> <span class="st">"Plot 2: Primary Sources of Adverse Events Report from 20100101 to 20200101"</span>)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot.</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>plot2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-214dc391fc9fd593d747" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-214dc391fc9fd593d747">{"x":{"visdat":{"1cf461184785":["function () ","plotlyVisDat"]},"cur_data":"1cf461184785","attrs":{"1cf461184785":{"labels":{},"values":{},"textinfo":"label+percent+value","hoverinfo":"text","text":{},"marker":{"line":{"color":"black","width":1}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Plot 2: Primary Sources of Adverse Events Report from 20100101 to 20200101","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["Other","Animal Owner","Veterinarian","Other Health Care Professional","Patient","Unknown","Physician"],"values":[271885,195882,131102,56257,2014,319,62],"textinfo":"label+percent+value","hoverinfo":["text","text","text","text","text","text","text"],"text":["Other <br> Count:  271885 <br> Percentage:  41.35 %","Animal Owner <br> Count:  195882 <br> Percentage:  29.79 %","Veterinarian <br> Count:  131102 <br> Percentage:  19.94 %","Other Health Care Professional <br> Count:  56257 <br> Percentage:  8.56 %","Patient <br> Count:  2014 <br> Percentage:  0.31 %","Unknown <br> Count:  319 <br> Percentage:  0.05 %","Physician <br> Count:  62 <br> Percentage:  0.01 %"],"marker":{"color":"rgba(31,119,180,1)","line":{"color":"black","width":1}},"type":"pie","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="plot-3" class="level2">
+<h2 class="anchored" data-anchor-id="plot-3">Plot 3</h2>
+<p>Based on the “Type of Report” numerical summaries for percentages of the types of adverse events across 10 years (2013-2022) queried from openFDA API “animalandveterinary” endpoint, the distributions of percentages seem very different among different types of reports. Let’s visualize the distributions with boxplot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>plot3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(type_of_report_animal_2013_to_2022, </span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">aes</span>(reaction,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>                    percentage,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">color=</span>reaction)) <span class="sc">+</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add the box plot layer.</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span> </span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Jitter the points to add a little more info to the boxplot.</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>() <span class="sc">+</span> </span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add labels to the axes.</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">name =</span> <span class="st">"Reaction"</span>, <span class="at">labels =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">11</span>]) <span class="sc">+</span> </span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Percentage"</span>) <span class="sc">+</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add a title.</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Plot 3: Percentage of Types of Adverse Events from 20130101 to 20221231"</span>) <span class="sc">+</span> </span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove the legend because it isn't needed.</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>),</span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>)) <span class="sc">+</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="st">"Reaction"</span>)</span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot.</span></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>plot3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Project_2_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="Project_2_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+</section>
+<section id="plot-4" class="level2">
+<h2 class="anchored" data-anchor-id="plot-4">Plot 4</h2>
+<p>Based on the “Outcomes” numerical summaries for percentages of medical status outcomes across 10 years (2013-2022) queried from openFDA API “animalandveterinary” endpoint, the distributions of percentage seem very different among different outcomes. Let’s visualize the distributions with dotplot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>plot4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(outcomes_animal_2013_to_2022, </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">aes</span>(medical.status.outcome,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                    percentage,</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">color=</span>medical.status.outcome)) <span class="sc">+</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add the box plot layer.</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_dotplot</span>(<span class="at">binaxis =</span> <span class="st">"y"</span>, <span class="at">stackdir =</span> <span class="st">"center"</span>) <span class="sc">+</span> </span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Jitter the points to add a little more info to the boxplot.</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>() <span class="sc">+</span> </span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add labels to the axes.</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">name =</span> <span class="st">"Medical Status Outcome"</span>, <span class="at">labels =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]) <span class="sc">+</span> </span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="st">"Percentage"</span>) <span class="sc">+</span></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add a title.</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Plot 4: Percentage of Medical Status Outcomes after Treatment from 20130101 to 20221231"</span>) <span class="sc">+</span> </span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove the legend because it isn't needed.</span></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>),</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>)) <span class="sc">+</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="st">"Outcomes"</span>)</span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot.</span></span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>plot4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Bin width defaults to 1/30 of the range of the data. Pick better value with
+`binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Project_2_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
 </section>
 
 </main>
