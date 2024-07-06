@@ -70,7 +70,7 @@ animal_API_reports_over_time <- function(start_date, end_date){
   }
 }  
 
-#animal_API_reports_over_time(19940101,20060101)
+#animal_API_reports_over_time(20150101,20221231)
 
 ```
 
@@ -114,7 +114,7 @@ animal_API_who_reports <- function(start_date, end_date){
   }
 }  
 
-#animal_API_who_reports(20090101, 20190202) 
+#animal_API_who_reports(20150101, 20221231) 
 
 ```
 
@@ -158,7 +158,7 @@ animal_API_types_of_reports <- function(start_date, end_date){
   }
 }  
 
-#animal_API_types_of_reports(20090101, 20190202) 
+#animal_API_types_of_reports(20150101, 20221231) 
 
 ```
 
@@ -202,7 +202,7 @@ animal_API_animal_breeds <- function(start_date, end_date){
   }
 }  
 
-#animal_API_animal_breeds(20110101, 20190202) 
+#animal_API_animal_breeds(20150101, 20221231) 
 
 ```
 
@@ -246,7 +246,7 @@ animal_API_reactions <- function(start_date, end_date){
   }
 }  
 
-#animal_API_reactions(20180101, 20190202) 
+#animal_API_reactions(20150101, 20221231) 
 
 ```
 
@@ -291,7 +291,7 @@ animal_API_outcomes <- function(start_date, end_date){
   }
 }  
 
-#animal_API_outcomes(20180101, 20190901) 
+#animal_API_outcomes(20150101, 20221231) 
 
 ```
 
@@ -344,7 +344,7 @@ drug_API_reports_over_time <- function(start_date, end_date){
   }
 }  
 
-#drug_API_reports_over_time(20040101,20160101)
+#drug_API_reports_over_time(20150101,20221231)
 
 ```
 
@@ -389,13 +389,14 @@ drug_API_who_reports <- function(start_date, end_date){
 }  
 
 # 1: Physician; 2: Pharmacist; 3: Other health professional; 4: Lawyer; 5: Consumer or non-health professional
-#drug_API_who_reports(20040101, 20240331)
+
+#drug_API_who_reports(20150101, 20221231)
 
 ```
 
 # General query code
 
-This is a universal query code chunk to query from either "animalandveterinary" or "drug" in openFDA API endpoint. There are total 6 different queries to get 6 different types of data from "animalandveterinary" endpoint, which are "Reports over time"(query=1), "Who reports"(query=2), "Types of report"(query=3), "Animal breeds"(query=4), "Reactions"(query=5), and "Outcomes"(query=6). There are total 2 different queries to get 2 different types of data from "drug" endpoint, which are "Reports over time"(query=1), "Who reports"(query=2).
+This is a universal query code chunk to query from either "animalandveterinary" or "drug" endpoint of openFDA API. There are total 6 different queries to get 6 different types of data from "animalandveterinary" endpoint, which are "Reports over time"(query=1), "Who reports"(query=2), "Types of report"(query=3), "Animal breeds"(query=4), "Reactions"(query=5), and "Outcomes"(query=6). There are total 2 different queries to get 2 different types of data from "drug" endpoint, which are "Reports over time"(query=1), "Who reports"(query=2).
 
 
 ```{r}
@@ -483,30 +484,31 @@ endpoint_API_query <- function(endpoint, query, start_date, end_date){
   }
 }  
 
-# endpoint_API_query("animalandveterinary",1,20000101,20120101)
-# endpoint_API_query("animalandveterinary",2,20000101,20120101)
-# endpoint_API_query("animalandveterinary",3,20000101,20120101)
-# endpoint_API_query("animalandveterinary",4,20000101,20120101)
-# endpoint_API_query("animalandveterinary",5,20000101,20120101)
-# endpoint_API_query("animalandveterinary",6,20000101,20120101)
+# endpoint_API_query("animalandveterinary",1,20150101,20221231)
+# endpoint_API_query("animalandveterinary",2,20150101,20221231)
+# endpoint_API_query("animalandveterinary",3,20150101,20221231)
+# endpoint_API_query("animalandveterinary",4,20150101,20221231)
+# endpoint_API_query("animalandveterinary",5,20150101,20221231)
+# endpoint_API_query("animalandveterinary",6,20150101,20221231)
 # 
-# endpoint_API_query("drug",1,20000101,20120101)
-# endpoint_API_query("drug",2,20000101,20120101)
+# endpoint_API_query("drug",1,20150101,20221231)
+# endpoint_API_query("drug",2,20150101,20221231)
 
 ```
 
 # Summarize the data
 
-## "Who reports" Contingency tables
+## Contingency tables for "Who reports" queries
 
-### openFDA API "animalandveterinary" endpoint
+### from openFDA API "animalandveterinary" endpoint
 
 Below is the "Who reports" contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API "animalandveterinary" endpoint.
 
 ```{r}
 
-start_date <- 20220101  
-end_date <- 20230101
+start_date <- 20150101  
+end_date <- 20221231
+
 who_reports_animal <- endpoint_API_query("animalandveterinary",2,start_date,end_date)
 
 who_reports_animal <- who_reports_animal[[3]] |>
@@ -521,14 +523,15 @@ print_tibble_with_title(who_reports_animal, paste0("<Who reports> Contingency Ta
 
 ```
 
-### openFDA API "drug" endpoint
+### from openFDA API "drug" endpoint
 
 Below is the "Who reports" contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API "drug" endpoint. The meanings of the values of variable term in the original output: 1 represents "Physician", 2 represents "Pharmacist", 3 represents "Other health professional", 4 represents "Lawyer", 5 represents "Consumer or non-health". I replaced these number values with their corresponding meanings in the final contingency table and added a title corresponding to the queried date range. 
 
 ```{r}
 
-start_date <- 20220101  
-end_date <- 20230101 
+start_date <- 20150101  
+end_date <- 20221231 
+
 who_reports_drug <- endpoint_API_query("drug",2,start_date,end_date)
 
 who_reports_drug <- who_reports_drug[[3]] |>
@@ -547,17 +550,26 @@ print_tibble_with_title(who_reports_drug, paste0("<Who reports> Contingency Tabl
 
 ```
 
-## "Type of Report" numerical summaries
+## Numerical summaries 
+
+### for "Type of Report" queries
 
 This is the "Type of Report" numerical summaries for percentages of the types of adverse events across 10 years (2013-2022) queried from openFDA API "animalandveterinary" endpoint.
 
 ```{r}
 
-for(i in 2013:2022){
+start_date <- 20150101  
+end_date <- 20221231
+
+start_year <- substr(start_date, 1, 4)
+end_year <- substr(end_date, 1, 4)
+
+for(i in start_year:end_year){
   
-  start_date <- as.numeric(paste0(i, "0101"))
-  end_date <- as.numeric(paste0(i, "1231"))
-  type_of_report_animal <- endpoint_API_query("animalandveterinary",3,start_date,end_date)
+  start_date2 <- as.numeric(paste0(i, "0101"))
+  end_date2 <- as.numeric(paste0(i, "1231"))
+  
+  type_of_report_animal <- endpoint_API_query("animalandveterinary",3,start_date2,end_date2)
   
   type_of_report_animal <- type_of_report_animal[[3]] |>
     rename(reaction = term) |>
@@ -568,42 +580,46 @@ for(i in 2013:2022){
 
 }
 
-data_frames <- mget(paste0("type_of_report_animal_", 2013:2022))
+data_frames <- mget(paste0("type_of_report_animal_", start_year:end_year))
 
-type_of_report_animal_2013_to_2022 <- bind_rows(data_frames, .id = "source_year") 
+type_of_report_animal_year_range <- bind_rows(data_frames, .id = "source_year") 
 
-type_of_report_animal_2013_to_2022_stat <- type_of_report_animal_2013_to_2022 |>
+type_of_report_animal_year_range_stat <- type_of_report_animal_year_range |>
   group_by(reaction) |>
   summarize(
     across(percentage, .fns = list(
-      "mean_percentage" = mean,
-      "median_percentage" = median,
-      "var_percentage" = var,
-      "sd_percentage" = sd,
-      "IQR_percentage" = IQR
+      "mean" = mean,
+      "median" = median,
+      "var" = var,
+      "sd" = sd,
+      "IQR" = IQR
       ), .names = "{.fn}_{.col}"))
 
-start_date <- 20130101
-end_date <- 20221231
 name <- paste0("Summary statistics for percentage of types of adverse events from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint." )
 
-knitr::kable(type_of_report_animal_2013_to_2022_stat, 
+knitr::kable(type_of_report_animal_year_range_stat, 
              caption= name,
              digits=2)
 
 ```
 
-## "Outcomes" numerical summaries
+### for "Outcomes" queries
 
 This is the "Outcomes" numerical summaries for percentages of medical status outcomes across 10 years (2013-2022) queried from openFDA API "animalandveterinary" endpoint.
 
 ```{r}
 
-for(i in 2013:2022){
+start_date <- 20150101  
+end_date <- 20221231
+
+start_year <- substr(start_date, 1, 4)
+end_year <- substr(end_date, 1, 4)
+
+for(i in start_year:end_year){
   
-  start_date <- as.numeric(paste0(i, "0101"))
-  end_date <- as.numeric(paste0(i, "1231"))
-  outcomes_animal <- endpoint_API_query("animalandveterinary",6,start_date,end_date)
+  start_date2 <- as.numeric(paste0(i, "0101"))
+  end_date2 <- as.numeric(paste0(i, "1231"))
+  outcomes_animal <- endpoint_API_query("animalandveterinary",6,start_date2,end_date2)
   
   outcomes_animal <- outcomes_animal[[3]] |>
     rename(medical.status.outcome = term) |>
@@ -614,11 +630,11 @@ for(i in 2013:2022){
 
 }
 
-data_frames <- mget(paste0("outcomes_animal_", 2013:2022))
+data_frames <- mget(paste0("outcomes_animal_", start_year:end_year))
 
-outcomes_animal_2013_to_2022 <- bind_rows(data_frames, .id = "source_year")
+outcomes_animal_year_range <- bind_rows(data_frames, .id = "source_year")
 
-outcomes_animal_2013_to_2022_stat <- outcomes_animal_2013_to_2022 |>
+outcomes_animal_year_range_stat <- outcomes_animal_year_range |>
   group_by(medical.status.outcome) |>
   summarize(
     across(percentage, .fns = list(
@@ -629,11 +645,9 @@ outcomes_animal_2013_to_2022_stat <- outcomes_animal_2013_to_2022 |>
       "IQR_percentage" = IQR
       ), .names = "{.fn}_{.col}"))
 
-start_date <- 20130101
-end_date <- 20221231
 name <- paste0("Summary statistics for percentage by medical status outcome from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint." )
 
-knitr::kable(outcomes_animal_2013_to_2022_stat, 
+knitr::kable(outcomes_animal_year_range_stat, 
              caption= name,
              digits=2)
 
@@ -643,56 +657,64 @@ knitr::kable(outcomes_animal_2013_to_2022_stat,
 
 ## Plot 1
 
-reports over time
+Based on the "Reports over time" query for how many adverse reports regarding to any undesirable experience associated with the use of an animal drug, including adverse reactions, product use errors, and product/manufacturing problems, across 8 years (2015-2022) in the openFDA API endpoint for the animal drug adverse event reports, we can visualize it with bar plot. User can also select a specific year within 2015-2022, and then visualize the counts by each month with bar plot.
 
 ```{r}
 
-for(i in 2000:2020){
-  
-  start_date <- as.numeric(paste0(i, "0101"))
-  end_date <- as.numeric(paste0(i, "1231"))
-  reports_over_time_animal <- endpoint_API_query("animalandveterinary",1,start_date,end_date)
-  
-  reports_over_time_animal_stat <- reports_over_time_animal[[3]] |>
-    summarize(count = sum(count)) |>
-    mutate(year = i) |>
-    select(year, count)
-  
-  assign(paste0("reports_over_time_animal_stat_", i), reports_over_time_animal_stat)
+start_date <- 20150101
+end_date <- 20221231
 
-}
+reports_over_time_animal  <- endpoint_API_query("animalandveterinary",1,start_date,end_date)[[3]] 
 
-data_frames <- mget(paste0("reports_over_time_animal_stat_", 2000:2020))
-
-reports_over_time_animal_1990_to_2020 <- bind_rows(data_frames, .id = "source_year") |>
+reports_over_time_animal_year  <- reports_over_time_animal |>
+  group_by(year = lubridate::year(receivedate_ymd)) |>
+  summarise(count = sum(count)) |>
   mutate(year = as.character(year))
 
-plot1 <- ggplot(reports_over_time_animal_1990_to_2020, 
-                aes(year,
-                    count)) +
-  # Add the box plot layer.
-  # Jitter the points to add a little more info to the boxplot.
-  geom_point(color = "blue") + 
+reports_over_time_animal_month <- reports_over_time_animal |>
+  group_by(year = year(receivedate_ymd), month = month(receivedate_ymd, label = TRUE)) |> 
+  summarise(count = sum(count)) 
+
+reports_over_time_animal_plot <- reports_over_time_animal_month |>
+  mutate(year = as.character(year))
+
+plot1_1 <- ggplot(reports_over_time_animal_year, aes(year, count)) +
+  geom_bar(stat = "identity", fill = "skyblue", width = 0.5) + 
+  # Bar plot
   labs(x = "Year", y = "Counts") +
-  # Add a title.
-  ggtitle("Plot 1: Counts of Received Adverse events Reports from 2000 to 2020") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
+  ggtitle("Plot 1: Counts of Received Adverse events Reports \n from 2016-01-01 to 2020-12-31") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+plot1_1
 
-plot1 <- plotly::ggplotly(plot1, tooltip = c("year", "count"), dynamicTicks = TRUE, hoverinfo = "y")
 
-# Display the plot.
-plot1
+reports_over_time_animal_stat <- function(input_year){
+  reports_over_time_animal_month |>
+    filter(year == input_year) |>
+    mutate(year = as.character(year))
+}
+
+input_year <- 2019
+reports_over_time_animal_plot <- reports_over_time_animal_stat(input_year)
+
+plot1_2 <- ggplot(reports_over_time_animal_plot, aes(month, count)) +
+  geom_bar(stat = "identity", position = "dodge", fill = "skyblue") + 
+  # Bar plot
+  labs(x = "Month", y = "Counts") +
+  ggtitle(paste0("Plot 1: Counts of Received Adverse events Reports ", "in ", input_year, ".")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+plot1_2
 
 ```
 
 ## Plot 2
 
-Who reports
+Based on the "Who reports" query for primary reporter who holds or provides the most pertinent information related to the adverse event report across 8 years (2015-2022) in the openFDA API endpoint for the animal drug adverse event reports, we can visualize the percentages and the counts from each category with an interactive pie chart.
 
 ```{r}
 
-start_date <- 20100101  
-end_date <- 20200101
+start_date <- 20150101  
+end_date <- 20221231
+
 who_reports_animal <- endpoint_API_query("animalandveterinary",2,start_date,end_date)
 
 who_reports_animal <- who_reports_animal[[3]] |>
@@ -707,7 +729,7 @@ plot2 <- plotly::plot_ly(who_reports_animal, labels = ~primarysource, values = ~
                 hoverinfo = 'text',
                 text = ~paste(primarysource, "<br>", "Count: ", count, "<br>", "Percentage: ", round(percentage, 2), "%"),
                 marker = list(line = list(color = 'black', width = 1))) |>
-  layout(title = "Plot 2: Primary Sources of Adverse Events Report from 20100101 to 20200101")
+  layout(title = paste0("Plot 2: Primary Sources of Adverse Events Report \n from ", start_date, " to ", end_date))
 
 # Display the plot.
 plot2
@@ -720,7 +742,32 @@ Based on the "Type of Report" numerical summaries for percentages of the types o
 
 ```{r}
 
-plot3 <- ggplot(type_of_report_animal_2013_to_2022, 
+start_date <- 20150101  
+end_date <- 20221231
+
+start_year <- substr(start_date, 1, 4)
+end_year <- substr(end_date, 1, 4)
+
+for(i in start_year:end_year){
+  
+  start_date2 <- as.numeric(paste0(i, "0101"))
+  end_date2 <- as.numeric(paste0(i, "1231"))
+  
+  type_of_report_animal <- endpoint_API_query("animalandveterinary",3,start_date2,end_date2)
+  
+  type_of_report_animal <- type_of_report_animal[[3]] |>
+    rename(reaction = term) |>
+    mutate(percentage = count / sum(count) * 100) |>
+    select(reaction, percentage, count)
+  
+  assign(paste0("type_of_report_animal_", i), type_of_report_animal)
+
+}
+
+data_frames <- mget(paste0("type_of_report_animal_", start_year:end_year))
+type_of_report_animal_year_range <- bind_rows(data_frames, .id = "source_year") 
+
+plot3 <- ggplot(type_of_report_animal_year_range, 
                 aes(reaction,
                     percentage,
                     color=reaction)) +
@@ -730,14 +777,17 @@ plot3 <- ggplot(type_of_report_animal_2013_to_2022,
   geom_jitter() + 
   # Add labels to the axes.
   scale_x_discrete(name = "Reaction", labels = LETTERS[1:11]) + 
-  scale_y_continuous("Percentage") +
+  scale_y_continuous("Percentage%") +
+  scale_color_discrete("Reaction") +
   # Add a title.
-  ggtitle("Plot 3: Percentage of Types of Adverse Events from 20130101 to 20221231") + 
+  ggtitle(paste0("Plot 3: Percentage of Types of Adverse Events \n from ", start_date, " to ", end_date)) +
   # Remove the legend because it isn't needed.
   theme(legend.position = "right",
-        legend.text = element_text(size = 6),
-        legend.title = element_text(size = 7)) +
-  scale_color_discrete("Reaction")
+        legend.text = element_text(size = 7),
+        legend.title = element_text(size = 8),
+        plot.title = element_text(size = 11),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8)) 
 
 # Display the plot.
 plot3
@@ -746,29 +796,57 @@ plot3
 
 ## Plot 4
 
-Based on the "Outcomes" numerical summaries for percentages of medical status outcomes across 10 years (2013-2022) queried from openFDA API "animalandveterinary" endpoint, the distributions of percentage seem very different among different outcomes. Let’s visualize the distributions with dotplot.
+Based on the "Outcomes" numerical summaries for percentages of medical status outcomes across 10 years (2013-2022) queried from openFDA API "animalandveterinary" endpoint, the distributions of percentage seem very different among different outcomes. Let’s visualize the distributions with dot plot.
 
 ```{r}
 
-plot4 <- ggplot(outcomes_animal_2013_to_2022, 
+start_date <- 20150101  
+end_date <- 20221231
+
+start_year <- substr(start_date, 1, 4)
+end_year <- substr(end_date, 1, 4)
+
+for(i in start_year:end_year){
+  
+  start_date2 <- as.numeric(paste0(i, "0101"))
+  end_date2 <- as.numeric(paste0(i, "1231"))
+  outcomes_animal <- endpoint_API_query("animalandveterinary",6,start_date2,end_date2)
+  
+  outcomes_animal <- outcomes_animal[[3]] |>
+    rename(medical.status.outcome = term) |>
+    mutate(percentage = count / sum(count) * 100) |>
+    select(medical.status.outcome, percentage, count)
+  
+  assign(paste0("outcomes_animal_", i), outcomes_animal)
+
+}
+
+data_frames <- mget(paste0("outcomes_animal_", start_year:end_year))
+outcomes_animal_year_range <- bind_rows(data_frames, .id = "source_year")
+
+plot4 <- ggplot(outcomes_animal_year_range, 
                 aes(medical.status.outcome,
                     percentage,
-                    color=medical.status.outcome)) +
+                    color=medical.status.outcome
+                    )) +
   # Add the box plot layer.
-  geom_dotplot(binaxis = "y", stackdir = "center") + 
+  geom_dotplot(binaxis = "y", stackdir = "center", binwidth = 1.5) + 
   # Jitter the points to add a little more info to the boxplot.
   geom_jitter() + 
   # Add labels to the axes.
   scale_x_discrete(name = "Medical Status Outcome", labels = LETTERS[1:6]) + 
-  scale_y_continuous("Percentage") +
-  # Add a title.
-  ggtitle("Plot 4: Percentage of Medical Status Outcomes after Treatment from 20130101 to 20221231") + 
+  scale_y_continuous("Percentage%") +
+  scale_color_discrete("Outcomes") +
+# Add a title.
+ggtitle(paste0("Plot 4: Percentage of Medical Status Outcomes \n after Treatment from ", start_date, " to ", end_date)) + 
   # Remove the legend because it isn't needed.
   theme(legend.position = "right",
-        legend.text = element_text(size = 6),
-        legend.title = element_text(size = 7)) +
-  scale_color_discrete("Outcomes")
-
+#        legend.position=c(0.85, 0.3),
+        legend.text = element_text(size = 7),
+        legend.title = element_text(size = 8),
+        plot.title = element_text(size = 11),
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8)) 
 # Display the plot.
 plot4
 
