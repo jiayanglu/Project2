@@ -951,44 +951,6 @@ end_date <- 20221231
 fun_plot4(endpoint, start_date, end_date)
 ```
 
-#Wrapper function for plots
-
-```{r}
-
-# fun_wrapper_plot <- function(endpoint, summary, type_of_data, start_date, end_date, input_year){
-#   if (endpoint == "animalandveterinary"){
-#     if (type_of_data == "Reports over time"){
-#       fun_plot1(endpoint, summary, start_date, end_date, input_year)
-#     } else if (type_of_data == "Who reports") {
-#       fun_plot2(endpoint, start_date, end_date)
-#     } else if (type_of_data == "Types of report"){
-#       fun_plot3(start_date, end_date)
-#     } else if (type_of_data == "Outcomes"){
-#       fun_plot4(start_date, end_date)
-#     }
-#   } else if (endpoint == "drug"){
-#     if (type_of_data == "Reports over time"){
-#       fun_plot1(endpoint, summary, start_date, end_date, input_year)
-#     } else if (type_of_data == "Who reports") {
-#       fun_plot2(endpoint, start_date, end_date)
-#     } else {
-#       message <- paste0("ERROR: This type of data is not aviable from this endpoint.")
-#       stop(message)
-#     }
-#   }
-# }
-# 
-# endpoint <- "drug"
-# type_of_data <- "Reports over time"
-# summary <- "Monthly Summary"
-# start_date <- 20150101
-# end_date <- 20221231
-# input_year <- 2019
-# 
-# fun_wrapper_plot(endpoint, summary, type_of_data, start_date, end_date, input_year)
-
-```
-
 # Shiny app
 
 ##fun_plot
@@ -1006,11 +968,10 @@ ui <- fluidPage(
       selectInput("endpoint", "Endpoint:", 
                   choices = c("animalandveterinary", "drug"),
                   selected = "animalandveterinary"),
-      dateInput("start_date", "Start Date:", value = "2020-01-01"),
-      dateInput("end_date", "End Date:", value = "2022-12-31"),
       selectInput("type_of_data", "Select Type of Data:",
                   choices = c("Reports over time", "Who reports", "Types of report", "Outcomes")),
-      actionButton("query_button", "Query API"),
+      dateInput("start_date", "Start Date:", value = "2020-01-01"),
+      dateInput("end_date", "End Date:", value = "2022-12-31"),
       hr(),
       h2("Data Exploration"),
       conditionalPanel(
@@ -1018,11 +979,11 @@ ui <- fluidPage(
         radioButtons("summary", "Summary Type:",
                      choices = c("Yearly Summary", "Monthly Summary"))
       ),
+      actionButton("query_button", "Query API"),
       conditionalPanel(
         condition = "input.type_of_data == 'Reports over time' && input.summary == 'Monthly Summary'",
         selectInput("input_year", "Select Year:", choices = NULL)
-      )
-    ),
+      )),
     mainPanel(
       tabsetPanel(
         tabPanel("Reports over time", plotOutput("plot_reports_over_time")),
@@ -1051,19 +1012,36 @@ server <- function(input, output, session) {
     summary <- input$summary
     input_year <- input$input_year
     
-    if (type_of_data == "Reports over time" & summary == "Yearly Summary") {
-      data <- fun_plot1_1(endpoint, start_date, end_date)$data
-    } else if (type_of_data == "Reports over time" & summary == "Monthly Summary"){
-      data <- fun_plot1_2(endpoint, start_date, end_date, input_year)$data
-    } else if (type_of_data == "Who reports"){
-      data <- fun_plot2(endpoint, start_date, end_date)$data
-    } else if (type_of_data == "Types of report"){
-      data <- fun_plot3(endpoint, start_date, end_date)$data
-    } else if (type_of_data == "Outcomes"){
-      data <-fun_plot4(endpoint, start_date, end_date)$data
+    if (endpoint == "animalandveterinary"){
+      
+      if (type_of_data == "Reports over time" & summary == "Yearly Summary") {
+        data <- fun_plot1_1(endpoint, start_date, end_date)$data
+      } else if (type_of_data == "Reports over time" & summary == "Monthly Summary"){
+        data <- fun_plot1_2(endpoint, start_date, end_date, input_year)$data
+      } else if (type_of_data == "Who reports"){
+        data <- fun_plot2(endpoint, start_date, end_date)$data
+      } else if (type_of_data == "Types of report"){
+        data <- fun_plot3(endpoint, start_date, end_date)$data
+      } else if (type_of_data == "Outcomes"){
+        data <-fun_plot4(endpoint, start_date, end_date)$data
+      }
+      
+      return(data)
+    } else if (endpoint == "drug"){
+      
+      if (type_of_data == "Reports over time" & summary == "Yearly Summary") {
+        data <- fun_plot1_1(endpoint, start_date, end_date)$data
+      } else if (type_of_data == "Reports over time" & summary == "Monthly Summary"){
+        data <- fun_plot1_2(endpoint, start_date, end_date, input_year)$data
+      } else if (type_of_data == "Who reports"){
+        data <- fun_plot2(endpoint, start_date, end_date)$data
+      } else {
+        data <- paste("Error: Data is only available for 'Reports over time' and 'Who reports' tabs in 'drug' endpoint.")
+      }
+      
+      return(data)
     }
     
-    return(data)
   })
   
   output$download_data_table <- renderTable({
@@ -1100,27 +1078,31 @@ server <- function(input, output, session) {
       plot <- fun_plot2(input$endpoint, input$start_date, input$end_date)$plot
     } 
     
-    return(plotly::plotly_build(plot))
+    return(plot)
   })
     
     output$plot_types_of_report  <- renderPlot({
       req(input$type_of_data)
       
-      if (input$type_of_data == "Types of report") {
+      if (input$endpoint == "animalandveterinary" && input$type_of_data == "Types of report") {
         plot <- fun_plot3(input$endpoint, input$start_date, input$end_date)
-      } 
-      
-      return(plot)
+        return(plot)
+      } else if (input$endpoint == "drug" && input$type_of_data == "Types of report"){
+        validate(need(FALSE, "Error: Plot is only available for 'Reports over time' and 'Who reports' tabs in 'drug' endpoint."))
+        return(NULL)
+      }
     })
     
     output$plot_outcomes <- renderPlot({
       req(input$type_of_data)
       
-      if (input$type_of_data == "Outcomes") {
+      if (input$endpoint == "animalandveterinary" && input$type_of_data == "Outcomes") {
         plot <- fun_plot4(input$endpoint, input$start_date, input$end_date)
-      } 
-      
-      return(plot)
+        return(plot)
+      } else if (input$endpoint == "drug" && input$type_of_data == "Outcomes"){
+        validate(need(FALSE, "Error: Plot is only available for 'Reports over time' and 'Who reports' tabs in 'drug' endpoint."))
+        return(NULL)
+      }
     })
     
   #Update year choices based on data available
@@ -1141,6 +1123,229 @@ server <- function(input, output, session) {
 }
 
 # Run the application 
+shinyApp(ui = ui, server = server)
+```
+
+## new version
+
+```{r}
+library(shiny)
+library(plotly)
+
+# UI
+ui <- fluidPage(
+  titlePanel("Adverse Events Reports Analysis"),
+  
+  tabsetPanel(
+    id = "tabs",
+    
+    # About Tab
+    tabPanel("About",
+             fluidRow(
+               column(6,
+                      h2("About This App"),
+                      tags$p("This app provides analysis of adverse events reports."),
+                      tags$p("It allows users to query data from an API, visualize data summaries, and download data subsets."),
+                      tags$p("For more information about the data source, please visit ",
+                             tags$a("Data Source Website", href = "https://example.com"),
+                             "."),
+                      tags$p("Purpose of Each Tab:"),
+                      tags$ul(
+                        tags$li("About: Provides information about the app and its purpose."),
+                        tags$li("Data Download: Allows users to query and download data."),
+                        tags$li("Data Exploration: Enables exploration of data through plots and summaries.")
+                      )
+               ),
+               column(6,
+                      h2("Related Image"),
+                      img(src = "path_to_your_image.png", height = 200, width = 200)
+               )
+             )
+    ),
+    
+    # Data Download Tab
+    tabPanel("Data Download",
+             sidebarLayout(
+               sidebarPanel(
+                 h2("Data Download"),
+                 selectInput("endpoint_download", "Endpoint:", 
+                             choices = c("animalandveterinary", "drug"),
+                             selected = "animalandveterinary"),
+                 selectInput("type_of_data_download", "Select Type of Data:",
+                             choices = c("Reports over time", "Who reports", "Types of report", "Outcomes")),
+                 dateInput("start_date_download", "Start Date:", value = "2020-01-01"),
+                 dateInput("end_date_download", "End Date:", value = "2022-12-31"),
+                 actionButton("query_button", "Query API"),
+                 conditionalPanel(
+                   condition = "input.type_of_data_download == 'Reports over time'",
+                   radioButtons("summary_download", "Summary Type:",
+                                choices = c("Yearly Summary", "Monthly Summary"))
+                 ),
+                 conditionalPanel(
+                   condition = "input.type_of_data_download == 'Reports over time' && input.summary_download == 'Monthly Summary'",
+                   selectInput("input_year_download", "Select Year:", choices = NULL)
+                 )
+               ),
+               mainPanel(
+                 tableOutput("download_data_table"),
+                 downloadButton("download_subset", "Download Subset Data")
+               )
+             )
+    ),
+    
+    # Data Exploration Tab
+    tabPanel("Data Exploration",
+             sidebarLayout(
+               sidebarPanel(
+                 h2("Data Exploration"),
+                 selectInput("endpoint_explore", "Endpoint:",
+                             choices = c("animalandveterinary", "drug"),
+                             selected = "animalandveterinary"),
+                 selectInput("type_of_data_explore", "Select Type of Data:",
+                             choices = c("Reports over time", "Who reports", "Types of report", "Outcomes")),
+                 dateInput("start_date_explore", "Start Date:", value = "2020-01-01"),
+                 dateInput("end_date_explore", "End Date:", value = "2022-12-31"),
+                 conditionalPanel(
+                   condition = "input.type_of_data_explore == 'Reports over time'",
+                   radioButtons("summary", "Summary Type:",
+                                choices = c("Yearly Summary", "Monthly Summary"))
+                 ),
+                 conditionalPanel(
+                   condition = "input.type_of_data_explore == 'Reports over time' & input.summary == 'Monthly Summary'",
+                   selectInput("input_year", "Select Year:", choices = NULL)
+                 ),
+                 actionButton("explore_button", "Explore Data")
+               ),
+               mainPanel(
+                 plotlyOutput("exploration_plot")
+               )
+             )
+    )
+  )
+)
+
+# Server
+server <- function(input, output, session) {
+  
+ query_data <- reactive({
+    req(input$query_button)
+    
+   endpoint <- input$endpoint_download
+   type_of_data <- input$type_of_data_download
+   start_date <- input$start_date_download
+   end_date <- input$end_date_download
+   summary <- input$summary_download
+   input_year <- input$input_year_download
+   
+    
+    if (endpoint == "animalandveterinary"){
+      
+      if (type_of_data == "Reports over time" & summary == "Yearly Summary") {
+        data <- fun_plot1_1(endpoint, start_date, end_date)$data
+      } else if (type_of_data == "Reports over time" & summary == "Monthly Summary"){
+        data <- fun_plot1_2(endpoint, start_date, end_date, input_year)$data
+      } else if (type_of_data == "Who reports"){
+        data <- fun_plot2(endpoint, start_date, end_date)$data
+      } else if (type_of_data == "Types of report"){
+        data <- fun_plot3(endpoint, start_date, end_date)$data
+      } else if (type_of_data == "Outcomes"){
+        data <-fun_plot4(endpoint, start_date, end_date)$data
+      }
+      
+      return(data)
+    } else if (endpoint == "drug"){
+      
+      if (type_of_data == "Reports over time" & summary == "Yearly Summary") {
+        data <- fun_plot1_1(endpoint, start_date, end_date)$data
+      } else if (type_of_data == "Reports over time" & summary == "Monthly Summary"){
+        data <- fun_plot1_2(endpoint, start_date, end_date, input_year)$data
+      } else if (type_of_data == "Who reports"){
+        data <- fun_plot2(endpoint, start_date, end_date)$data
+      } else {
+        data <- paste("Error: Data is only available for 'Reports over time' and 'Who reports' tabs in 'drug' endpoint.")
+      }
+      
+      return(data)
+    }
+  })
+ 
+  output$download_data_table <- renderTable({
+    query_data()
+  })
+    
+  # Subset data and download as CSV
+  output$download_subset <- downloadHandler(
+    filename = function() {
+      paste("subset_data_", Sys.Date(), ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(query_data(), file, row.names = FALSE)
+    }
+  )
+  
+  # Render plot based on user selection in Data Exploration tab
+  output$exploration_plot <- renderPlotly({
+    req(input$explore_button)
+
+    if (input$endpoint_explore == "animalandveterinary"){
+
+      if (input$type_of_data_explore == "Reports over time" & input$summary == "Yearly Summary") {
+        plot <- fun_plot1_1(input$endpoint_explore, input$start_date_explore, input$end_date_explore)
+      } else if (input$type_of_data_explore == "Reports over time" & input$summary == "Monthly Summary"){
+        plot <- fun_plot1_2(input$endpoint_explore, input$start_date_explore, input$end_date_explore, input$input_year)
+      } else if (input$type_of_data_explore == "Who reports"){
+        plot <- fun_plot2(input$endpoint_explore, input$start_date_explore, input$end_date_explore)$plot
+      } else if (input$type_of_data_explore == "Types of report"){
+        plot <- fun_plot3(input$endpoint_explore, input$start_date_explore, input$end_date_explore)
+      } else if (input$type_of_data_explore == "Outcomes"){
+        plot <-fun_plot4(input$endpoint_explore, input$start_date_explore, input$end_date_explore)
+      }
+
+      return(plot)
+    } else if (input$endpoint_explore == "drug"){
+
+      if (input$type_of_data_explore == "Reports over time" & input$summary == "Yearly Summary") {
+        plot <- fun_plot1_1(input$endpoint_explore, input$start_date_explore, input$end_date_explore)
+      } else if (input$type_of_data_explore == "Reports over time" & input$summary == "Monthly Summary"){
+        plot <- fun_plot1_2(input$endpoint_explore, input$start_date_explore, input$end_date_explore, input$input_year)
+      } else if (input$type_of_data_explore == "Who reports"){
+        plot <- fun_plot2(input$endpoint_explore, input$start_date_explore, input$end_date_explore)$plot
+      } else {
+        validate(need(FALSE, "Error: Plot is only available for 'Reports over time' and 'Who reports' tabs in 'drug' endpoint."))
+        return(NULL)
+
+      }
+
+      return(plot)
+  }
+  })
+  
+  observe({
+    req(input$type_of_data_download, input$summary_download)
+    
+    if (input$type_of_data_download == "Reports over time" && input$summary_download == "Monthly Summary") {
+      years <- year(ymd(input$start_date_download)):year(ymd(input$end_date_download))
+      updateSelectInput(session, "input_year_download", choices = years)
+    } else {
+      updateSelectInput(session, "input_year_download", choices = NULL)
+    }
+  })
+  
+  # Update year choices based on data available
+  observe({
+    req(input$type_of_data_explore, input$summary)
+
+    if (input$type_of_data_explore == "Reports over time" && input$summary == "Monthly Summary") {
+      years <- year(ymd(input$start_date_explore)):year(ymd(input$end_date_explore))
+      updateSelectInput(session, "input_year", choices = years)
+    } else {
+      updateSelectInput(session, "input_year", choices = NULL)
+    }
+  })
+  
+}
+
+# Run the application
 shinyApp(ui = ui, server = server)
 ```
 
