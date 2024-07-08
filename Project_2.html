@@ -999,9 +999,9 @@ The following object is masked from 'package:shiny':
 <h2 class="anchored" data-anchor-id="plot-1">Plot 1</h2>
 <p>Based on the “Reports over time” query for how many adverse reports regarding to any undesirable experience associated with the use of an animal drug, including adverse reactions, product use errors, and product/manufacturing problems, across 8 years (2015-2022) in the openFDA API endpoint for the animal drug adverse event reports, we can visualize it with bar plot. User can also select a specific year within 2015-2022, and then visualize the counts by each month with bar plot.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>fun_plot1_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>fun_plot1_1 <span class="ot">&lt;-</span> <span class="cf">function</span>(endpoint, start_date, end_date){</span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  reports_over_time_animal  <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">1</span>,start_date,end_date)[[<span class="dv">3</span>]] </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  reports_over_time_animal  <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(endpoint,<span class="dv">1</span>,start_date,end_date)[[<span class="dv">3</span>]] </span>
 <span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  reports_over_time_animal_year  <span class="ot">&lt;-</span> reports_over_time_animal <span class="sc">|&gt;</span></span>
 <span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(<span class="at">year =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(receivedate_ymd)) <span class="sc">|&gt;</span></span>
@@ -1019,16 +1019,16 @@ The following object is masked from 'package:shiny':
 <span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">"skyblue"</span>, <span class="at">width =</span> <span class="fl">0.5</span>) <span class="sc">+</span> </span>
 <span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Bar plot</span></span>
 <span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Counts"</span>) <span class="sc">+</span></span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Counts of Received Adverse events Reports </span><span class="sc">\n</span><span class="st"> from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">"."</span>)) <span class="sc">+</span></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Counts of Received Adverse events Reports from "</span>, start_date, <span class="st">" to "</span>, end_date, <span class="st">"."</span>)) <span class="sc">+</span></span>
 <span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  plot1_1</span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(plot1_1)</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>endpoint <span class="ot">&lt;-</span> <span class="st">"drug"</span></span>
 <span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20150101</span></span>
 <span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
 <span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a><span class="fu">fun_plot1_1</span>(start_date, end_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a><span class="fu">fun_plot1_1</span>(endpoint, start_date, end_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`summarise()` has grouped output by 'year'. You can override using the
 `.groups` argument.</code></pre>
@@ -1040,9 +1040,9 @@ The following object is masked from 'package:shiny':
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>fun_plot1_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date, input_year){</span>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>fun_plot1_2 <span class="ot">&lt;-</span> <span class="cf">function</span>(endpoint, start_date, end_date, input_year){</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  reports_over_time_animal  <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">1</span>,start_date,end_date)[[<span class="dv">3</span>]] </span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  reports_over_time_animal  <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(endpoint,<span class="dv">1</span>,start_date,end_date)[[<span class="dv">3</span>]] </span>
 <span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  reports_over_time_animal_year  <span class="ot">&lt;-</span> reports_over_time_animal <span class="sc">|&gt;</span></span>
 <span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(<span class="at">year =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(receivedate_ymd)) <span class="sc">|&gt;</span></span>
@@ -1061,17 +1061,22 @@ The following object is masked from 'package:shiny':
 <span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>, <span class="at">fill =</span> <span class="st">"skyblue"</span>) <span class="sc">+</span> </span>
 <span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Bar plot</span></span>
 <span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Month"</span>, <span class="at">y =</span> <span class="st">"Counts"</span>) <span class="sc">+</span></span>
-<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Counts of Received Adverse events </span><span class="sc">\n</span><span class="st"> Reports "</span>, <span class="st">"in "</span>, input_year, <span class="st">"."</span>)) <span class="sc">+</span></span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Counts of Received Adverse events Reports "</span>, <span class="st">"in "</span>, input_year, <span class="st">"."</span>)) <span class="sc">+</span></span>
 <span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
 <span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>  plot1_2</span>
 <span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20150101</span></span>
-<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
-<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>input_year <span class="ot">&lt;-</span> <span class="dv">2019</span></span>
-<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a><span class="fu">fun_plot1_2</span>(start_date, end_date, input_year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary"</span></span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20150101</span></span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>input_year <span class="ot">&lt;-</span> <span class="dv">2019</span></span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a><span class="fu">year</span>(<span class="fu">ymd</span>(start_date))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2015</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fun_plot1_2</span>(endpoint, start_date, end_date, input_year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`summarise()` has grouped output by 'year'. You can override using the
 `.groups` argument.</code></pre>
@@ -1089,33 +1094,246 @@ The following object is masked from 'package:shiny':
 <h2 class="anchored" data-anchor-id="plot-2">Plot 2</h2>
 <p>Based on the “Who reports” query for primary reporter who holds or provides the most pertinent information related to the adverse event report across 8 years (2015-2022) in the openFDA API endpoint for the animal drug adverse event reports, we can visualize the percentages and the counts from each category with an interactive pie chart.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>fun_plot2 <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date,end_date){</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  who_reports_animal <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">2</span>,start_date,end_date)</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  who_reports_animal <span class="ot">&lt;-</span> who_reports_animal[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">primarysource =</span> term) <span class="sc">|&gt;</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(primarysource, percentage, count)</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(plotly)</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  plot2 <span class="ot">&lt;-</span> plotly<span class="sc">::</span><span class="fu">plot_ly</span>(who_reports_animal, <span class="at">labels =</span> <span class="sc">~</span>primarysource, <span class="at">values =</span> <span class="sc">~</span>count, <span class="at">type =</span> <span class="st">'pie'</span>,</span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>                           <span class="at">textinfo =</span> <span class="st">'label+percent+value'</span>, </span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>                           <span class="at">hoverinfo =</span> <span class="st">'text'</span>,</span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>                           <span class="at">text =</span> <span class="sc">~</span><span class="fu">paste</span>(primarysource, <span class="st">"&lt;br&gt;"</span>, <span class="st">"Count: "</span>, count, <span class="st">"&lt;br&gt;"</span>, <span class="st">"Percentage: "</span>, <span class="fu">round</span>(percentage, <span class="dv">2</span>), <span class="st">"%"</span>),</span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>                           <span class="at">marker =</span> <span class="fu">list</span>(<span class="at">line =</span> <span class="fu">list</span>(<span class="at">color =</span> <span class="st">'black'</span>, <span class="at">width =</span> <span class="dv">1</span>))) <span class="sc">|&gt;</span></span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">layout</span>(<span class="at">title =</span> <span class="fu">paste0</span>(<span class="st">"Primary Sources of Adverse Events Report </span><span class="sc">\n</span><span class="st"> from "</span>, start_date, <span class="st">" to "</span>, end_date))</span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Display the plot.</span></span>
-<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>  plot2</span>
-<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20150101</span>  </span>
-<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
-<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a><span class="fu">fun_plot2</span>(start_date, end_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>fun_plot2 <span class="ot">&lt;-</span> <span class="cf">function</span>(endpoint, start_date, end_date){</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (endpoint <span class="sc">==</span> <span class="st">"animalandveterinary"</span>){</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    who_reports <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">2</span>,start_date,end_date)[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rename</span>(<span class="at">primarysource =</span> term) <span class="sc">|&gt;</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(primarysource, percentage, count)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (endpoint <span class="sc">==</span> <span class="st">"drug"</span>){</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    who_reports <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"drug"</span>,<span class="dv">2</span>,start_date,end_date)[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">primarysource =</span> <span class="fu">as.character</span>(term)) <span class="sc">|&gt;</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">primarysource =</span> <span class="fu">case_when</span>(</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>        term <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"Physician"</span>,</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>        term <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">"Pharmacist"</span>,</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>        term <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">"Other health professional"</span>,</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>        term <span class="sc">==</span> <span class="dv">4</span> <span class="sc">~</span> <span class="st">"Lawyer"</span>,</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>        term <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">"Consumer or non-health"</span>,</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.character</span>(primarysource)</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>      )) <span class="sc">|&gt;</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(primarysource, count) <span class="sc">|&gt;</span></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(primarysource, percentage, count)</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>   <span class="co"># plot2 &lt;- ggplot(who_reports, aes(x = "", y = percentage, fill = primarysource)) +</span></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a>   <span class="co">#  geom_bar(stat = "identity", width = 1, color = "white") +</span></span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a>   <span class="co">#   coord_polar("y", start = 0) +</span></span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a>   <span class="co">#  labs(title = paste0("Primary Sources of Adverse Events Report from ", start_date, " to ", end_date),</span></span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a>   <span class="co">#       x = NULL, y = NULL) +</span></span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a>   <span class="co">#  scale_fill_discrete(name = "Primary Source") +</span></span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a>   <span class="co">#  theme_void() +</span></span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a>   <span class="co">#  theme(plot.title = element_text(hjust = 0.5, size = 14),</span></span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a>   <span class="co">#        legend.position = "right",</span></span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a>   <span class="co">#        legend.text = element_text(size = 8),</span></span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a>   <span class="co">#        legend.title = element_text(size = 10))</span></span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>  plot2 <span class="ot">&lt;-</span> plotly<span class="sc">::</span><span class="fu">plot_ly</span>(who_reports, <span class="at">labels =</span> <span class="sc">~</span>primarysource, <span class="at">values =</span> <span class="sc">~</span>count, <span class="at">type =</span> <span class="st">'pie'</span>,</span>
+<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a>                           <span class="at">textinfo =</span> <span class="st">'label+percent+value'</span>,</span>
+<span id="cb32-40"><a href="#cb32-40" aria-hidden="true" tabindex="-1"></a>                           <span class="at">hoverinfo =</span> <span class="st">'text'</span>,</span>
+<span id="cb32-41"><a href="#cb32-41" aria-hidden="true" tabindex="-1"></a>                           <span class="at">text =</span> <span class="sc">~</span><span class="fu">paste</span>(primarysource, <span class="st">"&lt;br&gt;"</span>, <span class="st">"Count: "</span>, count, <span class="st">"&lt;br&gt;"</span>, <span class="st">"Percentage: "</span>, <span class="fu">round</span>(percentage, <span class="dv">2</span>), <span class="st">"%"</span>),</span>
+<span id="cb32-42"><a href="#cb32-42" aria-hidden="true" tabindex="-1"></a>                           </span>
+<span id="cb32-43"><a href="#cb32-43" aria-hidden="true" tabindex="-1"></a>                           <span class="at">textfont =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">8</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb32-44"><a href="#cb32-44" aria-hidden="true" tabindex="-1"></a>    plotly<span class="sc">::</span><span class="fu">layout</span>(<span class="at">title =</span> <span class="fu">list</span>(<span class="at">text =</span> <span class="fu">paste0</span>(<span class="st">"Primary Sources of Adverse Events Report from "</span>, start_date, <span class="st">" to "</span>, end_date),</span>
+<span id="cb32-45"><a href="#cb32-45" aria-hidden="true" tabindex="-1"></a>                        <span class="at">font =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">12</span>)))</span>
+<span id="cb32-46"><a href="#cb32-46" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-47"><a href="#cb32-47" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Display the plot.</span></span>
+<span id="cb32-48"><a href="#cb32-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(<span class="at">data =</span> who_reports, <span class="at">plot =</span> plot2))</span>
+<span id="cb32-49"><a href="#cb32-49" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb32-50"><a href="#cb32-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-51"><a href="#cb32-51" aria-hidden="true" tabindex="-1"></a>endpoint <span class="ot">&lt;-</span> <span class="st">"drug"</span></span>
+<span id="cb32-52"><a href="#cb32-52" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20150101</span>  </span>
+<span id="cb32-53"><a href="#cb32-53" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
+<span id="cb32-54"><a href="#cb32-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-55"><a href="#cb32-55" aria-hidden="true" tabindex="-1"></a><span class="fu">fun_plot2</span>(endpoint, start_date, end_date)<span class="sc">$</span>plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-e4b88b8956bd9e50a5f8" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-e4b88b8956bd9e50a5f8">{"x":{"visdat":{"4d3c3f5f4879":["function () ","plotlyVisDat"]},"cur_data":"4d3c3f5f4879","attrs":{"4d3c3f5f4879":{"labels":{},"values":{},"textinfo":"label+percent+value","hoverinfo":"text","text":{},"textfont":{"size":8},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"Primary Sources of Adverse Events Report from 20150101 to 20221231","font":{"size":12}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["Consumer or non-health","Physician","Other health professional","Pharmacist","Lawyer"],"values":[5132197,2348271,2139693,769378,393284],"textinfo":"label+percent+value","hoverinfo":["text","text","text","text","text"],"text":["Consumer or non-health <br> Count:  5132197 <br> Percentage:  47.6 %","Physician <br> Count:  2348271 <br> Percentage:  21.78 %","Other health professional <br> Count:  2139693 <br> Percentage:  19.84 %","Pharmacist <br> Count:  769378 <br> Percentage:  7.14 %","Lawyer <br> Count:  393284 <br> Percentage:  3.65 %"],"textfont":{"size":8},"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+<section id="plot-3" class="level2">
+<h2 class="anchored" data-anchor-id="plot-3">Plot 3</h2>
+<p>Based on the “Type of Report” numerical summaries for percentages of the types of adverse events across 10 years (2013-2022) queried from openFDA API “animalandveterinary” endpoint, the distributions of percentages seem very different among different types of reports. Let’s visualize the distributions with boxplot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>fun_plot3 <span class="ot">&lt;-</span> <span class="cf">function</span>(endpoint, start_date, end_date){</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  start_year <span class="ot">&lt;-</span> <span class="fu">substr</span>(start_date, <span class="dv">1</span>, <span class="dv">4</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  end_year <span class="ot">&lt;-</span> <span class="fu">substr</span>(end_date, <span class="dv">1</span>, <span class="dv">4</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> start_year<span class="sc">:</span>end_year){</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    start_date2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"0101"</span>))</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>    end_date2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"1231"</span>))</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    type_of_report_animal <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(endpoint,<span class="dv">3</span>,start_date2,end_date2)</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    type_of_report_animal <span class="ot">&lt;-</span> type_of_report_animal[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rename</span>(<span class="at">reaction =</span> term) <span class="sc">|&gt;</span></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(reaction, percentage, count)</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"type_of_report_animal_"</span>, i), type_of_report_animal)</span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>  data_frames <span class="ot">&lt;-</span> <span class="fu">mget</span>(<span class="fu">paste0</span>(<span class="st">"type_of_report_animal_"</span>, start_year<span class="sc">:</span>end_year))</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>  type_of_report_animal_year_range <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(data_frames, <span class="at">.id =</span> <span class="st">"source_year"</span>) </span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>  plot3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(type_of_report_animal_year_range, </span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(reaction,</span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>                      percentage,</span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>                      <span class="at">color=</span>reaction)) <span class="sc">+</span></span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add the box plot layer.</span></span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>() <span class="sc">+</span> </span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Jitter the points to add a little more info to the boxplot.</span></span>
+<span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>() <span class="sc">+</span> </span>
+<span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add labels to the axes.</span></span>
+<span id="cb33-34"><a href="#cb33-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_discrete</span>(<span class="at">name =</span> <span class="st">"Reaction"</span>, <span class="at">labels =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">11</span>]) <span class="sc">+</span> </span>
+<span id="cb33-35"><a href="#cb33-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="st">"Percentage%"</span>) <span class="sc">+</span></span>
+<span id="cb33-36"><a href="#cb33-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_discrete</span>(<span class="st">"Reaction"</span>) <span class="sc">+</span></span>
+<span id="cb33-37"><a href="#cb33-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add a title.</span></span>
+<span id="cb33-38"><a href="#cb33-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Percentage of Types of Adverse Events from "</span>, start_date, <span class="st">" to "</span>, end_date)) <span class="sc">+</span></span>
+<span id="cb33-39"><a href="#cb33-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove the legend because it isn't needed.</span></span>
+<span id="cb33-40"><a href="#cb33-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
+<span id="cb33-41"><a href="#cb33-41" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb33-42"><a href="#cb33-42" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb33-43"><a href="#cb33-43" aria-hidden="true" tabindex="-1"></a>          <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb33-44"><a href="#cb33-44" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb33-45"><a href="#cb33-45" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>)) </span>
+<span id="cb33-46"><a href="#cb33-46" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb33-47"><a href="#cb33-47" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Display the plot.</span></span>
+<span id="cb33-48"><a href="#cb33-48" aria-hidden="true" tabindex="-1"></a>  plot3</span>
+<span id="cb33-49"><a href="#cb33-49" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb33-50"><a href="#cb33-50" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb33-51"><a href="#cb33-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-52"><a href="#cb33-52" aria-hidden="true" tabindex="-1"></a>endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary"</span></span>
+<span id="cb33-53"><a href="#cb33-53" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20150101</span>  </span>
+<span id="cb33-54"><a href="#cb33-54" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
+<span id="cb33-55"><a href="#cb33-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-56"><a href="#cb33-56" aria-hidden="true" tabindex="-1"></a><span class="fu">fun_plot3</span>(endpoint, start_date, end_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Project_2_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="plot-4" class="level2">
+<h2 class="anchored" data-anchor-id="plot-4">Plot 4</h2>
+<p>Based on the “Outcomes” numerical summaries for percentages of medical status outcomes across 10 years (2013-2022) queried from openFDA API “animalandveterinary” endpoint, the distributions of percentage seem very different among different outcomes. Let’s visualize the distributions with dot plot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>fun_plot4 <span class="ot">&lt;-</span> <span class="cf">function</span>(endpoint, start_date, end_date){</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  start_year <span class="ot">&lt;-</span> <span class="fu">substr</span>(start_date, <span class="dv">1</span>, <span class="dv">4</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  end_year <span class="ot">&lt;-</span> <span class="fu">substr</span>(end_date, <span class="dv">1</span>, <span class="dv">4</span>)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> start_year<span class="sc">:</span>end_year){</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    start_date2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"0101"</span>))</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    end_date2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"1231"</span>))</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    outcomes_animal <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(endpoint,<span class="dv">6</span>,start_date2,end_date2)</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    outcomes_animal <span class="ot">&lt;-</span> outcomes_animal[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rename</span>(<span class="at">medical.status.outcome =</span> term) <span class="sc">|&gt;</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(medical.status.outcome, percentage, count)</span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"outcomes_animal_"</span>, i), outcomes_animal)</span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>  data_frames <span class="ot">&lt;-</span> <span class="fu">mget</span>(<span class="fu">paste0</span>(<span class="st">"outcomes_animal_"</span>, start_year<span class="sc">:</span>end_year))</span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>  outcomes_animal_year_range <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(data_frames, <span class="at">.id =</span> <span class="st">"source_year"</span>)</span>
+<span id="cb34-23"><a href="#cb34-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb34-24"><a href="#cb34-24" aria-hidden="true" tabindex="-1"></a>  plot4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(outcomes_animal_year_range, </span>
+<span id="cb34-25"><a href="#cb34-25" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(medical.status.outcome,</span>
+<span id="cb34-26"><a href="#cb34-26" aria-hidden="true" tabindex="-1"></a>                      percentage,</span>
+<span id="cb34-27"><a href="#cb34-27" aria-hidden="true" tabindex="-1"></a>                      <span class="at">color=</span>medical.status.outcome</span>
+<span id="cb34-28"><a href="#cb34-28" aria-hidden="true" tabindex="-1"></a>                  )) <span class="sc">+</span></span>
+<span id="cb34-29"><a href="#cb34-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add the box plot layer.</span></span>
+<span id="cb34-30"><a href="#cb34-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_dotplot</span>(<span class="at">binaxis =</span> <span class="st">"y"</span>, <span class="at">stackdir =</span> <span class="st">"center"</span>, <span class="at">binwidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span> </span>
+<span id="cb34-31"><a href="#cb34-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Jitter the points to add a little more info to the boxplot.</span></span>
+<span id="cb34-32"><a href="#cb34-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>() <span class="sc">+</span> </span>
+<span id="cb34-33"><a href="#cb34-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add labels to the axes.</span></span>
+<span id="cb34-34"><a href="#cb34-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_discrete</span>(<span class="at">name =</span> <span class="st">"Medical Status Outcome"</span>, <span class="at">labels =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]) <span class="sc">+</span> </span>
+<span id="cb34-35"><a href="#cb34-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="st">"Percentage%"</span>) <span class="sc">+</span></span>
+<span id="cb34-36"><a href="#cb34-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_discrete</span>(<span class="st">"Outcomes"</span>) <span class="sc">+</span></span>
+<span id="cb34-37"><a href="#cb34-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add a title.</span></span>
+<span id="cb34-38"><a href="#cb34-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Percentage of Medical Status Outcomes after Treatment from "</span>, start_date, <span class="st">" to "</span>, end_date)) <span class="sc">+</span> </span>
+<span id="cb34-39"><a href="#cb34-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove the legend because it isn't needed.</span></span>
+<span id="cb34-40"><a href="#cb34-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
+<span id="cb34-41"><a href="#cb34-41" aria-hidden="true" tabindex="-1"></a>          <span class="co">#        legend.position=c(0.85, 0.3),</span></span>
+<span id="cb34-42"><a href="#cb34-42" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb34-43"><a href="#cb34-43" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb34-44"><a href="#cb34-44" aria-hidden="true" tabindex="-1"></a>          <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb34-45"><a href="#cb34-45" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb34-46"><a href="#cb34-46" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>)) </span>
+<span id="cb34-47"><a href="#cb34-47" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Display the plot.</span></span>
+<span id="cb34-48"><a href="#cb34-48" aria-hidden="true" tabindex="-1"></a>  plot4</span>
+<span id="cb34-49"><a href="#cb34-49" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb34-50"><a href="#cb34-50" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb34-51"><a href="#cb34-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-52"><a href="#cb34-52" aria-hidden="true" tabindex="-1"></a>endpoint <span class="ot">&lt;-</span> <span class="st">"animalandveterinary"</span></span>
+<span id="cb34-53"><a href="#cb34-53" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20150101</span>  </span>
+<span id="cb34-54"><a href="#cb34-54" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
+<span id="cb34-55"><a href="#cb34-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-56"><a href="#cb34-56" aria-hidden="true" tabindex="-1"></a><span class="fu">fun_plot4</span>(endpoint, start_date, end_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Project_2_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>#Wrapper function for plots</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fun_wrapper_plot &lt;- function(endpoint, summary, type_of_data, start_date, end_date, input_year){</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   if (endpoint == "animalandveterinary"){</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     if (type_of_data == "Reports over time"){</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="co">#       fun_plot1(endpoint, summary, start_date, end_date, input_year)</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co">#     } else if (type_of_data == "Who reports") {</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="co">#       fun_plot2(endpoint, start_date, end_date)</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co">#     } else if (type_of_data == "Types of report"){</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="co">#       fun_plot3(start_date, end_date)</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="co">#     } else if (type_of_data == "Outcomes"){</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="co">#       fun_plot4(start_date, end_date)</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="co">#     }</span></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="co">#   } else if (endpoint == "drug"){</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="co">#     if (type_of_data == "Reports over time"){</span></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="co">#       fun_plot1(endpoint, summary, start_date, end_date, input_year)</span></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="co">#     } else if (type_of_data == "Who reports") {</span></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a><span class="co">#       fun_plot2(endpoint, start_date, end_date)</span></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="co">#     } else {</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a><span class="co">#       message &lt;- paste0("ERROR: This type of data is not aviable from this endpoint.")</span></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a><span class="co">#       stop(message)</span></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a><span class="co">#     }</span></span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a><span class="co">#   }</span></span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a><span class="co"># }</span></span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a><span class="co"># endpoint &lt;- "drug"</span></span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a><span class="co"># type_of_data &lt;- "Reports over time"</span></span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a><span class="co"># summary &lt;- "Monthly Summary"</span></span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a><span class="co"># start_date &lt;- 20150101</span></span>
+<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a><span class="co"># end_date &lt;- 20221231</span></span>
+<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a><span class="co"># input_year &lt;- 2019</span></span>
+<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a><span class="co"># fun_wrapper_plot(endpoint, summary, type_of_data, start_date, end_date, input_year)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="shiny-app" class="level1">
+<h1>Shiny app</h1>
+<p>##fun_plot</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: package 'plotly' was built under R version 4.3.3</code></pre>
 </div>
@@ -1138,152 +1356,151 @@ Attaching package: 'plotly'</code></pre>
 
     layout</code></pre>
 </div>
-<div class="cell-output-display">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-59a02956c68087d5d8d8" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-59a02956c68087d5d8d8">{"x":{"visdat":{"4ef421121b47":["function () ","plotlyVisDat"]},"cur_data":"4ef421121b47","attrs":{"4ef421121b47":{"labels":{},"values":{},"textinfo":"label+percent+value","hoverinfo":"text","text":{},"marker":{"line":{"color":"black","width":1}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Primary Sources of Adverse Events Report <br /> from 20150101 to 20221231","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["Animal Owner","Other","Veterinarian","Other Health Care Professional","Patient","Unknown","Physician"],"values":[191807,137748,129324,93942,1662,552,59],"textinfo":"label+percent+value","hoverinfo":["text","text","text","text","text","text","text"],"text":["Animal Owner <br> Count:  191807 <br> Percentage:  34.55 %","Other <br> Count:  137748 <br> Percentage:  24.82 %","Veterinarian <br> Count:  129324 <br> Percentage:  23.3 %","Other Health Care Professional <br> Count:  93942 <br> Percentage:  16.92 %","Patient <br> Count:  1662 <br> Percentage:  0.3 %","Unknown <br> Count:  552 <br> Percentage:  0.1 %","Physician <br> Count:  59 <br> Percentage:  0.01 %"],"marker":{"color":"rgba(31,119,180,1)","line":{"color":"black","width":1}},"type":"pie","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-</section>
-<section id="plot-3" class="level2">
-<h2 class="anchored" data-anchor-id="plot-3">Plot 3</h2>
-<p>Based on the “Type of Report” numerical summaries for percentages of the types of adverse events across 10 years (2013-2022) queried from openFDA API “animalandveterinary” endpoint, the distributions of percentages seem very different among different types of reports. Let’s visualize the distributions with boxplot.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>fun_plot3 <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  start_year <span class="ot">&lt;-</span> <span class="fu">substr</span>(start_date, <span class="dv">1</span>, <span class="dv">4</span>)</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  end_year <span class="ot">&lt;-</span> <span class="fu">substr</span>(end_date, <span class="dv">1</span>, <span class="dv">4</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> start_year<span class="sc">:</span>end_year){</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    start_date2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"0101"</span>))</span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    end_date2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"1231"</span>))</span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    type_of_report_animal <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">3</span>,start_date2,end_date2)</span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    type_of_report_animal <span class="ot">&lt;-</span> type_of_report_animal[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
-<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rename</span>(<span class="at">reaction =</span> term) <span class="sc">|&gt;</span></span>
-<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(reaction, percentage, count)</span>
-<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"type_of_report_animal_"</span>, i), type_of_report_animal)</span>
-<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>  data_frames <span class="ot">&lt;-</span> <span class="fu">mget</span>(<span class="fu">paste0</span>(<span class="st">"type_of_report_animal_"</span>, start_year<span class="sc">:</span>end_year))</span>
-<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  type_of_report_animal_year_range <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(data_frames, <span class="at">.id =</span> <span class="st">"source_year"</span>) </span>
-<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>  plot3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(type_of_report_animal_year_range, </span>
-<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(reaction,</span>
-<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>                      percentage,</span>
-<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>                      <span class="at">color=</span>reaction)) <span class="sc">+</span></span>
-<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add the box plot layer.</span></span>
-<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>() <span class="sc">+</span> </span>
-<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Jitter the points to add a little more info to the boxplot.</span></span>
-<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>() <span class="sc">+</span> </span>
-<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add labels to the axes.</span></span>
-<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_discrete</span>(<span class="at">name =</span> <span class="st">"Reaction"</span>, <span class="at">labels =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">11</span>]) <span class="sc">+</span> </span>
-<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="st">"Percentage%"</span>) <span class="sc">+</span></span>
-<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_discrete</span>(<span class="st">"Reaction"</span>) <span class="sc">+</span></span>
-<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add a title.</span></span>
-<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Percentage of Types of Adverse Events </span><span class="sc">\n</span><span class="st"> from "</span>, start_date, <span class="st">" to "</span>, end_date)) <span class="sc">+</span></span>
-<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove the legend because it isn't needed.</span></span>
-<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
-<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
-<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
-<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a>          <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
-<span id="cb36-44"><a href="#cb36-44" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
-<span id="cb36-45"><a href="#cb36-45" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>)) </span>
-<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Display the plot.</span></span>
-<span id="cb36-48"><a href="#cb36-48" aria-hidden="true" tabindex="-1"></a>  plot3</span>
-<span id="cb36-49"><a href="#cb36-49" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb36-50"><a href="#cb36-50" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb36-51"><a href="#cb36-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-52"><a href="#cb36-52" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20150101</span>  </span>
-<span id="cb36-53"><a href="#cb36-53" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
-<span id="cb36-54"><a href="#cb36-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-55"><a href="#cb36-55" aria-hidden="true" tabindex="-1"></a><span class="fu">fun_plot3</span>(start_date, end_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Project_2_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="plot-4" class="level2">
-<h2 class="anchored" data-anchor-id="plot-4">Plot 4</h2>
-<p>Based on the “Outcomes” numerical summaries for percentages of medical status outcomes across 10 years (2013-2022) queried from openFDA API “animalandveterinary” endpoint, the distributions of percentage seem very different among different outcomes. Let’s visualize the distributions with dot plot.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>fun_plot4 <span class="ot">&lt;-</span> <span class="cf">function</span>(start_date, end_date){</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  start_year <span class="ot">&lt;-</span> <span class="fu">substr</span>(start_date, <span class="dv">1</span>, <span class="dv">4</span>)</span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  end_year <span class="ot">&lt;-</span> <span class="fu">substr</span>(end_date, <span class="dv">1</span>, <span class="dv">4</span>)</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> start_year<span class="sc">:</span>end_year){</span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    start_date2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"0101"</span>))</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>    end_date2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">paste0</span>(i, <span class="st">"1231"</span>))</span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    outcomes_animal <span class="ot">&lt;-</span> <span class="fu">endpoint_API_query</span>(<span class="st">"animalandveterinary"</span>,<span class="dv">6</span>,start_date2,end_date2)</span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>    outcomes_animal <span class="ot">&lt;-</span> outcomes_animal[[<span class="dv">3</span>]] <span class="sc">|&gt;</span></span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">rename</span>(<span class="at">medical.status.outcome =</span> term) <span class="sc">|&gt;</span></span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">percentage =</span> count <span class="sc">/</span> <span class="fu">sum</span>(count) <span class="sc">*</span> <span class="dv">100</span>) <span class="sc">|&gt;</span></span>
-<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(medical.status.outcome, percentage, count)</span>
-<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"outcomes_animal_"</span>, i), outcomes_animal)</span>
-<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>  data_frames <span class="ot">&lt;-</span> <span class="fu">mget</span>(<span class="fu">paste0</span>(<span class="st">"outcomes_animal_"</span>, start_year<span class="sc">:</span>end_year))</span>
-<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>  outcomes_animal_year_range <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(data_frames, <span class="at">.id =</span> <span class="st">"source_year"</span>)</span>
-<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>  plot4 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(outcomes_animal_year_range, </span>
-<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">aes</span>(medical.status.outcome,</span>
-<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>                      percentage,</span>
-<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>                      <span class="at">color=</span>medical.status.outcome</span>
-<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>                  )) <span class="sc">+</span></span>
-<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add the box plot layer.</span></span>
-<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_dotplot</span>(<span class="at">binaxis =</span> <span class="st">"y"</span>, <span class="at">stackdir =</span> <span class="st">"center"</span>, <span class="at">binwidth =</span> <span class="fl">1.5</span>) <span class="sc">+</span> </span>
-<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Jitter the points to add a little more info to the boxplot.</span></span>
-<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_jitter</span>() <span class="sc">+</span> </span>
-<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add labels to the axes.</span></span>
-<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_discrete</span>(<span class="at">name =</span> <span class="st">"Medical Status Outcome"</span>, <span class="at">labels =</span> LETTERS[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>]) <span class="sc">+</span> </span>
-<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="st">"Percentage%"</span>) <span class="sc">+</span></span>
-<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_discrete</span>(<span class="st">"Outcomes"</span>) <span class="sc">+</span></span>
-<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add a title.</span></span>
-<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ggtitle</span>(<span class="fu">paste0</span>(<span class="st">"Percentage of Medical Status Outcomes </span><span class="sc">\n</span><span class="st"> after Treatment from "</span>, start_date, <span class="st">" to "</span>, end_date)) <span class="sc">+</span> </span>
-<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Remove the legend because it isn't needed.</span></span>
-<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>,</span>
-<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a>          <span class="co">#        legend.position=c(0.85, 0.3),</span></span>
-<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
-<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
-<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a>          <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">11</span>),</span>
-<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
-<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>)) </span>
-<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Display the plot.</span></span>
-<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a>  plot4</span>
-<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a>start_date <span class="ot">&lt;-</span> <span class="dv">20150101</span>  </span>
-<span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a>end_date <span class="ot">&lt;-</span> <span class="dv">20221231</span></span>
-<span id="cb37-54"><a href="#cb37-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-55"><a href="#cb37-55" aria-hidden="true" tabindex="-1"></a><span class="fu">fun_plot4</span>(start_date, end_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Project_2_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="shiny-app" class="level1">
-<h1>Shiny app</h1>
-<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">fluidPage</span>(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">titlePanel</span>(<span class="st">"Adverse Events Reports Analysis"</span>),</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sidebarLayout</span>(</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">sidebarPanel</span>(</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">h2</span>(<span class="st">"Data Download"</span>),</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">selectInput</span>(<span class="st">"endpoint"</span>, <span class="st">"Endpoint:"</span>, </span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>                  <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">"animalandveterinary"</span>, <span class="st">"drug"</span>),</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>                  <span class="at">selected =</span> <span class="st">"animalandveterinary"</span>),</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">dateInput</span>(<span class="st">"start_date"</span>, <span class="st">"Start Date:"</span>, <span class="at">value =</span> <span class="st">"2020-01-01"</span>),</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">dateInput</span>(<span class="st">"end_date"</span>, <span class="st">"End Date:"</span>, <span class="at">value =</span> <span class="st">"2022-12-31"</span>),</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">selectInput</span>(<span class="st">"type_of_data"</span>, <span class="st">"Select Type of Data:"</span>,</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>                  <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">"Reports over time"</span>, <span class="st">"Who reports"</span>, <span class="st">"Types of report"</span>, <span class="st">"Outcomes"</span>)),</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">actionButton</span>(<span class="st">"query_button"</span>, <span class="st">"Query API"</span>),</span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">hr</span>(),</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">h2</span>(<span class="st">"Data Exploration"</span>),</span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">conditionalPanel</span>(</span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">condition =</span> <span class="st">"input.type_of_data == 'Reports over time'"</span>,</span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">radioButtons</span>(<span class="st">"summary"</span>, <span class="st">"Summary Type:"</span>,</span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>                     <span class="at">choices =</span> <span class="fu">c</span>(<span class="st">"Yearly Summary"</span>, <span class="st">"Monthly Summary"</span>))</span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>      <span class="fu">conditionalPanel</span>(</span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">condition =</span> <span class="st">"input.type_of_data == 'Reports over time' &amp;&amp; input.summary == 'Monthly Summary'"</span>,</span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>        <span class="fu">selectInput</span>(<span class="st">"input_year"</span>, <span class="st">"Select Year:"</span>, <span class="at">choices =</span> <span class="cn">NULL</span>)</span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mainPanel</span>(</span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tabsetPanel</span>(</span>
+<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">"Reports over time"</span>, <span class="fu">plotOutput</span>(<span class="st">"plot_reports_over_time"</span>)),</span>
+<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">"Who reports"</span>, <span class="fu">plotlyOutput</span>(<span class="st">"plot_who_reports"</span>)),</span>
+<span id="cb42-31"><a href="#cb42-31" aria-hidden="true" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">"Types of report"</span>, <span class="fu">plotOutput</span>(<span class="st">"plot_types_of_report"</span>)),</span>
+<span id="cb42-32"><a href="#cb42-32" aria-hidden="true" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">"Outcomes"</span>, <span class="fu">plotOutput</span>(<span class="st">"plot_outcomes"</span>)),</span>
+<span id="cb42-33"><a href="#cb42-33" aria-hidden="true" tabindex="-1"></a>        <span class="fu">tabPanel</span>(<span class="st">"Data Download"</span>,</span>
+<span id="cb42-34"><a href="#cb42-34" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">tableOutput</span>(<span class="st">"download_data_table"</span>),</span>
+<span id="cb42-35"><a href="#cb42-35" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">downloadButton</span>(<span class="st">"download_subset"</span>, <span class="st">"Download Subset Data"</span>))  </span>
+<span id="cb42-36"><a href="#cb42-36" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb42-37"><a href="#cb42-37" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb42-38"><a href="#cb42-38" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-39"><a href="#cb42-39" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb42-40"><a href="#cb42-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-41"><a href="#cb42-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-42"><a href="#cb42-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Define server logic</span></span>
+<span id="cb42-43"><a href="#cb42-43" aria-hidden="true" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb42-44"><a href="#cb42-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Query API and display data table</span></span>
+<span id="cb42-45"><a href="#cb42-45" aria-hidden="true" tabindex="-1"></a>  query_data <span class="ot">&lt;-</span> <span class="fu">reactive</span>({</span>
+<span id="cb42-46"><a href="#cb42-46" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req</span>(input<span class="sc">$</span>query_button)</span>
+<span id="cb42-47"><a href="#cb42-47" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-48"><a href="#cb42-48" aria-hidden="true" tabindex="-1"></a>    endpoint <span class="ot">&lt;-</span> input<span class="sc">$</span>endpoint</span>
+<span id="cb42-49"><a href="#cb42-49" aria-hidden="true" tabindex="-1"></a>    start_date <span class="ot">&lt;-</span> input<span class="sc">$</span>start_date</span>
+<span id="cb42-50"><a href="#cb42-50" aria-hidden="true" tabindex="-1"></a>    end_date <span class="ot">&lt;-</span> input<span class="sc">$</span>end_date</span>
+<span id="cb42-51"><a href="#cb42-51" aria-hidden="true" tabindex="-1"></a>    type_of_data <span class="ot">&lt;-</span> input<span class="sc">$</span>type_of_data</span>
+<span id="cb42-52"><a href="#cb42-52" aria-hidden="true" tabindex="-1"></a>    summary <span class="ot">&lt;-</span> input<span class="sc">$</span>summary</span>
+<span id="cb42-53"><a href="#cb42-53" aria-hidden="true" tabindex="-1"></a>    input_year <span class="ot">&lt;-</span> input<span class="sc">$</span>input_year</span>
+<span id="cb42-54"><a href="#cb42-54" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-55"><a href="#cb42-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (type_of_data <span class="sc">==</span> <span class="st">"Reports over time"</span> <span class="sc">&amp;</span> summary <span class="sc">==</span> <span class="st">"Yearly Summary"</span>) {</span>
+<span id="cb42-56"><a href="#cb42-56" aria-hidden="true" tabindex="-1"></a>      data <span class="ot">&lt;-</span> <span class="fu">fun_plot1_1</span>(endpoint, start_date, end_date)<span class="sc">$</span>data</span>
+<span id="cb42-57"><a href="#cb42-57" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (type_of_data <span class="sc">==</span> <span class="st">"Reports over time"</span> <span class="sc">&amp;</span> summary <span class="sc">==</span> <span class="st">"Monthly Summary"</span>){</span>
+<span id="cb42-58"><a href="#cb42-58" aria-hidden="true" tabindex="-1"></a>      data <span class="ot">&lt;-</span> <span class="fu">fun_plot1_2</span>(endpoint, start_date, end_date, input_year)<span class="sc">$</span>data</span>
+<span id="cb42-59"><a href="#cb42-59" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (type_of_data <span class="sc">==</span> <span class="st">"Who reports"</span>){</span>
+<span id="cb42-60"><a href="#cb42-60" aria-hidden="true" tabindex="-1"></a>      data <span class="ot">&lt;-</span> <span class="fu">fun_plot2</span>(endpoint, start_date, end_date)<span class="sc">$</span>data</span>
+<span id="cb42-61"><a href="#cb42-61" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (type_of_data <span class="sc">==</span> <span class="st">"Types of report"</span>){</span>
+<span id="cb42-62"><a href="#cb42-62" aria-hidden="true" tabindex="-1"></a>      data <span class="ot">&lt;-</span> <span class="fu">fun_plot3</span>(endpoint, start_date, end_date)<span class="sc">$</span>data</span>
+<span id="cb42-63"><a href="#cb42-63" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (type_of_data <span class="sc">==</span> <span class="st">"Outcomes"</span>){</span>
+<span id="cb42-64"><a href="#cb42-64" aria-hidden="true" tabindex="-1"></a>      data <span class="ot">&lt;-</span><span class="fu">fun_plot4</span>(endpoint, start_date, end_date)<span class="sc">$</span>data</span>
+<span id="cb42-65"><a href="#cb42-65" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb42-66"><a href="#cb42-66" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-67"><a href="#cb42-67" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(data)</span>
+<span id="cb42-68"><a href="#cb42-68" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb42-69"><a href="#cb42-69" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb42-70"><a href="#cb42-70" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>download_data_table <span class="ot">&lt;-</span> <span class="fu">renderTable</span>({</span>
+<span id="cb42-71"><a href="#cb42-71" aria-hidden="true" tabindex="-1"></a>    <span class="fu">query_data</span>()</span>
+<span id="cb42-72"><a href="#cb42-72" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb42-73"><a href="#cb42-73" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-74"><a href="#cb42-74" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Subset data and download as CSV</span></span>
+<span id="cb42-75"><a href="#cb42-75" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>download_subset <span class="ot">&lt;-</span> <span class="fu">downloadHandler</span>(</span>
+<span id="cb42-76"><a href="#cb42-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">filename =</span> <span class="cf">function</span>() {</span>
+<span id="cb42-77"><a href="#cb42-77" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste</span>(<span class="st">"subset_data_"</span>, <span class="fu">Sys.Date</span>(), <span class="st">".csv"</span>, <span class="at">sep =</span> <span class="st">""</span>)</span>
+<span id="cb42-78"><a href="#cb42-78" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb42-79"><a href="#cb42-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">content =</span> <span class="cf">function</span>(file) {</span>
+<span id="cb42-80"><a href="#cb42-80" aria-hidden="true" tabindex="-1"></a>      <span class="fu">write.csv</span>(<span class="fu">query_data</span>(), file, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb42-81"><a href="#cb42-81" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb42-82"><a href="#cb42-82" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-83"><a href="#cb42-83" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb42-84"><a href="#cb42-84" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Generate plot based on user selection</span></span>
+<span id="cb42-85"><a href="#cb42-85" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>plot_reports_over_time <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb42-86"><a href="#cb42-86" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req</span>(input<span class="sc">$</span>type_of_data, input<span class="sc">$</span>summary)</span>
+<span id="cb42-87"><a href="#cb42-87" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-88"><a href="#cb42-88" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (input<span class="sc">$</span>type_of_data <span class="sc">==</span> <span class="st">"Reports over time"</span> <span class="sc">&amp;</span> input<span class="sc">$</span>summary <span class="sc">==</span> <span class="st">"Yearly Summary"</span>) {</span>
+<span id="cb42-89"><a href="#cb42-89" aria-hidden="true" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> <span class="fu">fun_plot1_1</span>(input<span class="sc">$</span>endpoint, input<span class="sc">$</span>start_date, input<span class="sc">$</span>end_date)</span>
+<span id="cb42-90"><a href="#cb42-90" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (type_of_data <span class="sc">==</span> <span class="st">"Reports over time"</span> <span class="sc">&amp;</span> summary <span class="sc">==</span> <span class="st">"Monthly Summary"</span>){</span>
+<span id="cb42-91"><a href="#cb42-91" aria-hidden="true" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> <span class="fu">fun_plot1_2</span>(input<span class="sc">$</span>endpoint, input<span class="sc">$</span>start_date, input<span class="sc">$</span>end_date, input<span class="sc">$</span>input_year)</span>
+<span id="cb42-92"><a href="#cb42-92" aria-hidden="true" tabindex="-1"></a>    } </span>
+<span id="cb42-93"><a href="#cb42-93" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-94"><a href="#cb42-94" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(plot)</span>
+<span id="cb42-95"><a href="#cb42-95" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb42-96"><a href="#cb42-96" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb42-97"><a href="#cb42-97" aria-hidden="true" tabindex="-1"></a>    output<span class="sc">$</span>plot_who_reports <span class="ot">&lt;-</span> <span class="fu">renderPlotly</span>({</span>
+<span id="cb42-98"><a href="#cb42-98" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req</span>(input<span class="sc">$</span>type_of_data)</span>
+<span id="cb42-99"><a href="#cb42-99" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-100"><a href="#cb42-100" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (input<span class="sc">$</span>type_of_data <span class="sc">==</span> <span class="st">"Who reports"</span>) {</span>
+<span id="cb42-101"><a href="#cb42-101" aria-hidden="true" tabindex="-1"></a>      plot <span class="ot">&lt;-</span> <span class="fu">fun_plot2</span>(input<span class="sc">$</span>endpoint, input<span class="sc">$</span>start_date, input<span class="sc">$</span>end_date)<span class="sc">$</span>plot</span>
+<span id="cb42-102"><a href="#cb42-102" aria-hidden="true" tabindex="-1"></a>    } </span>
+<span id="cb42-103"><a href="#cb42-103" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-104"><a href="#cb42-104" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(plotly<span class="sc">::</span><span class="fu">plotly_build</span>(plot))</span>
+<span id="cb42-105"><a href="#cb42-105" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb42-106"><a href="#cb42-106" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-107"><a href="#cb42-107" aria-hidden="true" tabindex="-1"></a>    output<span class="sc">$</span>plot_types_of_report  <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb42-108"><a href="#cb42-108" aria-hidden="true" tabindex="-1"></a>      <span class="fu">req</span>(input<span class="sc">$</span>type_of_data)</span>
+<span id="cb42-109"><a href="#cb42-109" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb42-110"><a href="#cb42-110" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (input<span class="sc">$</span>type_of_data <span class="sc">==</span> <span class="st">"Types of report"</span>) {</span>
+<span id="cb42-111"><a href="#cb42-111" aria-hidden="true" tabindex="-1"></a>        plot <span class="ot">&lt;-</span> <span class="fu">fun_plot3</span>(input<span class="sc">$</span>endpoint, input<span class="sc">$</span>start_date, input<span class="sc">$</span>end_date)</span>
+<span id="cb42-112"><a href="#cb42-112" aria-hidden="true" tabindex="-1"></a>      } </span>
+<span id="cb42-113"><a href="#cb42-113" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb42-114"><a href="#cb42-114" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(plot)</span>
+<span id="cb42-115"><a href="#cb42-115" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb42-116"><a href="#cb42-116" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-117"><a href="#cb42-117" aria-hidden="true" tabindex="-1"></a>    output<span class="sc">$</span>plot_outcomes <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb42-118"><a href="#cb42-118" aria-hidden="true" tabindex="-1"></a>      <span class="fu">req</span>(input<span class="sc">$</span>type_of_data)</span>
+<span id="cb42-119"><a href="#cb42-119" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb42-120"><a href="#cb42-120" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (input<span class="sc">$</span>type_of_data <span class="sc">==</span> <span class="st">"Outcomes"</span>) {</span>
+<span id="cb42-121"><a href="#cb42-121" aria-hidden="true" tabindex="-1"></a>        plot <span class="ot">&lt;-</span> <span class="fu">fun_plot4</span>(input<span class="sc">$</span>endpoint, input<span class="sc">$</span>start_date, input<span class="sc">$</span>end_date)</span>
+<span id="cb42-122"><a href="#cb42-122" aria-hidden="true" tabindex="-1"></a>      } </span>
+<span id="cb42-123"><a href="#cb42-123" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb42-124"><a href="#cb42-124" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(plot)</span>
+<span id="cb42-125"><a href="#cb42-125" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb42-126"><a href="#cb42-126" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-127"><a href="#cb42-127" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Update year choices based on data available</span></span>
+<span id="cb42-128"><a href="#cb42-128" aria-hidden="true" tabindex="-1"></a>  <span class="fu">observe</span>({</span>
+<span id="cb42-129"><a href="#cb42-129" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req</span>(input<span class="sc">$</span>type_of_data, input<span class="sc">$</span>summary)</span>
+<span id="cb42-130"><a href="#cb42-130" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb42-131"><a href="#cb42-131" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (input<span class="sc">$</span>type_of_data <span class="sc">==</span> <span class="st">"Reports over time"</span> <span class="sc">&amp;&amp;</span> input<span class="sc">$</span>summary <span class="sc">==</span> <span class="st">"Monthly Summary"</span>) {</span>
+<span id="cb42-132"><a href="#cb42-132" aria-hidden="true" tabindex="-1"></a>      data <span class="ot">&lt;-</span> <span class="fu">query_data</span>()</span>
+<span id="cb42-133"><a href="#cb42-133" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb42-134"><a href="#cb42-134" aria-hidden="true" tabindex="-1"></a>      <span class="co">#  years &lt;- unique(year(data$year))</span></span>
+<span id="cb42-135"><a href="#cb42-135" aria-hidden="true" tabindex="-1"></a>      years <span class="ot">&lt;-</span> <span class="fu">year</span>(<span class="fu">ymd</span>(input<span class="sc">$</span>start_date))<span class="sc">:</span><span class="fu">year</span>(<span class="fu">ymd</span>(input<span class="sc">$</span>end_date))</span>
+<span id="cb42-136"><a href="#cb42-136" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb42-137"><a href="#cb42-137" aria-hidden="true" tabindex="-1"></a>      <span class="fu">updateSelectInput</span>(session, <span class="st">"input_year"</span>, <span class="at">choices =</span> years)</span>
+<span id="cb42-138"><a href="#cb42-138" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb42-139"><a href="#cb42-139" aria-hidden="true" tabindex="-1"></a>      <span class="fu">updateSelectInput</span>(session, <span class="st">"input_year"</span>, <span class="at">choices =</span> <span class="cn">NULL</span>)</span>
+<span id="cb42-140"><a href="#cb42-140" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb42-141"><a href="#cb42-141" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb42-142"><a href="#cb42-142" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb42-143"><a href="#cb42-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-144"><a href="#cb42-144" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the application </span></span>
+<span id="cb42-145"><a href="#cb42-145" aria-hidden="true" tabindex="-1"></a><span class="fu">shinyApp</span>(<span class="at">ui =</span> ui, <span class="at">server =</span> server)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p></p><div style="width: 100% ; height: 400px ; text-align: center; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box;" class="muted well">Shiny applications not supported in static R Markdown documents</div><p></p>
 </div>
