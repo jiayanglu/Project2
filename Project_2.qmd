@@ -1225,6 +1225,12 @@ ui <- fluidPage(
                    condition = "input.type_of_data_explore == 'Reports over time' & input.summary == 'Monthly Summary'",
                    selectInput("input_year", "Select Year:", choices = NULL)
                  ),
+                  conditionalPanel(
+                   condition = "input.type_of_data_explore == 'Who reports'",
+                   radioButtons("plot_or_contingency", "Select View:",
+                                choices = c("Plot", "Contingency Table"),
+                                selected = "Plot")
+                 ),
                  conditionalPanel(
                    condition = "input.endpoint_explore == 'animalandveterinary' & (input.type_of_data_explore == 'Types of report' | input.type_of_data_explore == 'Outcomes')",
                    radioButtons("plot_or_summary", "Select View:",
@@ -1235,7 +1241,8 @@ ui <- fluidPage(
                ),
                mainPanel(
                  plotlyOutput("exploration_plot"),
-                 tableOutput("exploration_table")
+                 uiOutput("exploration_table"),
+                 uiOutput("exploration_contingency")
                )
              )
     )
@@ -1366,41 +1373,23 @@ server <- function(input, output, session) {
   }
 })
   
-  # output$exploration_table <- renderTable({
-  #   table <- query_table()
-  #   
-  #   if (!is.null(table)) {
-  #     return(table)
-  #   } else {
-  #     return(NULL)
-  #   }
-  # })
-  
 output$exploration_table <- renderUI({
   table_data <- query_table()
   
   if (!is.null(table_data)) {
     title <- table_data$title
     table <- table_data$table
-    
     # Construct the UI elements for title and table
     title_ui <- fluidRow(
-      column(12, 
-             h3(title)
-      )
+      column(12, h3(title))
     )
-    
     table_ui <- fluidRow(
-      column(12,
-             tableOutput("exploration_table_output")
-      )
+      column(12, tableOutput("exploration_table_output"))
     )
-    
     # Wrap the table in renderTable
     output$exploration_table_output <- renderTable({
       table
     })
-    
     # Return UI elements
     return(fluidPage(
       title_ui,
@@ -1410,6 +1399,47 @@ output$exploration_table <- renderUI({
     return(NULL)
   }
 })
+
+query_contingency <- reactive({
+  req(input$explore_button)
+  
+  if (input$endpoint_explore == "animalandveterinary" & input$type_of_data_explore == "Who reports" & input$plot_or_contingency == "Contingency Table") {
+    
+    start_date <- input$start_date_explore
+    end_date <- input$end_date_explore
+    
+    contingency <- fun_contingency_table1(start_date, end_date)
+    return(contingency)
+  } else if (input$endpoint_explore == "drug" & input$type_of_data_explore == "Who reports" & input$plot_or_contingency == "Contingency Table"){
+    
+    start_date <- input$start_date_explore
+    end_date <- input$end_date_explore
+    
+    contingency <- fun_contingency_table2(start_date, end_date)
+    return(contingency)
+  } else {
+  return(NULL)
+}
+})
+
+output$exploration_contingency <- renderUI({
+    contingency_data <- query_contingency()
+    
+    if (!is.null(contingency_data)) {
+      contingency_ui <- fluidRow(
+        column(12, h3("Contingency Table")),
+        column(12, tableOutput("exploration_contingency_output"))
+      )
+      
+      output$exploration_contingency_output <- renderTable({
+        contingency_data
+      })
+      
+      return(contingency_ui)
+    } else {
+      return(NULL)
+    }
+  })
   
   observe({
     req(input$type_of_data_download, input$summary_download)
