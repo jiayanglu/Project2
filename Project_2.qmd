@@ -610,18 +610,25 @@ fun_summary1 <- function(start_date, end_date){
         "IQR" = IQR
       ), .names = "{.fn}_{.col}"))
   
-  name <- paste0("Summary statistics for percentage of types of adverse events from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint." )
-  
-  knitr::kable(type_of_report_animal_year_range_stat, 
-               caption= name,
-               digits=2)
-  
+  #return(type_of_report_animal_year_range_stat)
+  title <- paste0("Summary statistics for percentage of types of adverse events from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint." )
+
+  print_tibble_with_title <- function(tbl, title) {
+    cat(title, "\n")
+    print(tbl)
+  }
+
+  print_tibble_with_title(type_of_report_animal_year_range_stat, title)
+
 }
 
 start_date <- 20150101  
 end_date <- 20221231
 
 fun_summary1(start_date, end_date)
+
+paste0("Summary statistics for percentage of types of adverse events from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint.\n")
+return(fun_summary1(start_date, end_date))
 
 ```
 
@@ -666,11 +673,15 @@ fun_summary2 <- function(start_date, end_date){
         "IQR" = IQR
       ), .names = "{.fn}_{.col}"))
   
-  name <- paste0("Summary statistics for percentage by medical status outcome from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint." )
-  
-  knitr::kable(outcomes_animal_year_range_stat, 
-               caption= name,
-               digits=2)
+  #return(outcomes_animal_year_range_stat)
+  title <- paste0("Summary statistics for percentage by medical status outcome from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint." )
+
+  print_tibble_with_title <- function(tbl, title) {
+    cat(title, "\n")
+    print(tbl)
+  }
+
+  print_tibble_with_title(outcomes_animal_year_range_stat, title)
   
 }
 
@@ -1214,10 +1225,17 @@ ui <- fluidPage(
                    condition = "input.type_of_data_explore == 'Reports over time' & input.summary == 'Monthly Summary'",
                    selectInput("input_year", "Select Year:", choices = NULL)
                  ),
+                 conditionalPanel(
+                   condition = "input.endpoint_explore == 'animalandveterinary' & (input.type_of_data_explore == 'Types of report' | input.type_of_data_explore == 'Outcomes')",
+                   radioButtons("plot_or_summary", "Select View:",
+                                choices = c("Plot", "Numerical Summary"),
+                                selected = "Plot")
+                 ),
                  actionButton("explore_button", "Explore Data")
                ),
                mainPanel(
-                 plotlyOutput("exploration_plot")
+                 plotlyOutput("exploration_plot"),
+                 tableOutput("exploration_table")
                )
              )
     )
@@ -1286,21 +1304,23 @@ server <- function(input, output, session) {
   # Render plot based on user selection in Data Exploration tab
   output$exploration_plot <- renderPlotly({
     req(input$explore_button)
-
+    
     if (input$endpoint_explore == "animalandveterinary"){
-
+      
       if (input$type_of_data_explore == "Reports over time" & input$summary == "Yearly Summary") {
         plot <- fun_plot1_1(input$endpoint_explore, input$start_date_explore, input$end_date_explore)
       } else if (input$type_of_data_explore == "Reports over time" & input$summary == "Monthly Summary"){
         plot <- fun_plot1_2(input$endpoint_explore, input$start_date_explore, input$end_date_explore, input$input_year)
       } else if (input$type_of_data_explore == "Who reports"){
         plot <- fun_plot2(input$endpoint_explore, input$start_date_explore, input$end_date_explore)$plot
-      } else if (input$type_of_data_explore == "Types of report"){
-        plot <- fun_plot3(input$endpoint_explore, input$start_date_explore, input$end_date_explore)
-      } else if (input$type_of_data_explore == "Outcomes"){
-        plot <-fun_plot4(input$endpoint_explore, input$start_date_explore, input$end_date_explore)
-      }
-
+      } else if (input$type_of_data_explore == "Types of report" & input$plot_or_summary == "Plot"){
+          plot <- fun_plot3(input$endpoint_explore, input$start_date_explore, input$end_date_explore) 
+        } else if (input$type_of_data_explore == "Outcomes" & input$plot_or_summary == "Plot"){
+          plot <-fun_plot4(input$endpoint_explore, input$start_date_explore, input$end_date_explore)
+        } else {
+          plot <- NULL
+        }
+      
       return(plot)
     } else if (input$endpoint_explore == "drug"){
 
@@ -1310,15 +1330,86 @@ server <- function(input, output, session) {
         plot <- fun_plot1_2(input$endpoint_explore, input$start_date_explore, input$end_date_explore, input$input_year)
       } else if (input$type_of_data_explore == "Who reports"){
         plot <- fun_plot2(input$endpoint_explore, input$start_date_explore, input$end_date_explore)$plot
-      } else {
+      } else if (input$type_of_data_explore == "Types of report"){
         validate(need(FALSE, "Error: Plot is only available for 'Reports over time' and 'Who reports' tabs in 'drug' endpoint."))
         return(NULL)
-
+      } else if (input$type_of_data_explore == "Outcomes"){
+        validate(need(FALSE, "Error: Plot is only available for 'Reports over time' and 'Who reports' tabs in 'drug' endpoint."))
+        return(NULL)
+      } else {
+        plot <- NULL
       }
-
       return(plot)
   }
   })
+  
+  query_table <- reactive({
+  req(input$explore_button)
+  
+  if (input$endpoint_explore == "animalandveterinary" & 
+      (input$type_of_data_explore == "Types of report" || input$type_of_data_explore == "Outcomes") & 
+      input$plot_or_summary == "Numerical Summary") {
+    
+    start_date <- input$start_date_explore
+    end_date <- input$end_date_explore
+    
+    if (input$type_of_data_explore == "Types of report") {
+      table <- fun_summary1(start_date, end_date)
+      title <- paste0("Summary statistics for percentage of types of adverse events from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint.")
+      return(list(title = title, table = table))
+    } else if (input$type_of_data_explore == "Outcomes") {
+      table <- fun_summary2(start_date, end_date)
+      title <- paste0("Summary statistics for percentage by medical status outcome from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint.")
+      return(list(title = title, table = table))
+    }} else {
+    return(NULL)
+  }
+})
+  
+  # output$exploration_table <- renderTable({
+  #   table <- query_table()
+  #   
+  #   if (!is.null(table)) {
+  #     return(table)
+  #   } else {
+  #     return(NULL)
+  #   }
+  # })
+  
+output$exploration_table <- renderUI({
+  table_data <- query_table()
+  
+  if (!is.null(table_data)) {
+    title <- table_data$title
+    table <- table_data$table
+    
+    # Construct the UI elements for title and table
+    title_ui <- fluidRow(
+      column(12, 
+             h3(title)
+      )
+    )
+    
+    table_ui <- fluidRow(
+      column(12,
+             tableOutput("exploration_table_output")
+      )
+    )
+    
+    # Wrap the table in renderTable
+    output$exploration_table_output <- renderTable({
+      table
+    })
+    
+    # Return UI elements
+    return(fluidPage(
+      title_ui,
+      table_ui
+    ))
+  } else {
+    return(NULL)
+  }
+})
   
   observe({
     req(input$type_of_data_download, input$summary_download)
