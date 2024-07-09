@@ -1,4 +1,7 @@
 library(shiny)
+library(tidyverse)
+library(jsonlite)
+library(ggplot2)
 library(plotly)
 
 source("functions.R")
@@ -28,8 +31,8 @@ ui <- fluidPage(
                       )
                ),
                column(6,
-                      h2("openFDA"),
-                      img(src = "www/openFDA_logo.png", height = 75, width = 414)
+                      h2("openFDA Logo"),
+                      img(src = "https://open.fda.gov/img/l_openFDA.png")
                )
              )
     ),

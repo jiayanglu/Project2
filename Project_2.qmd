@@ -962,6 +962,9 @@ This the a Shiny app which provides comprehensive analysis and exploration of ad
 
 ```{r}
 library(shiny)
+library(tidyverse)
+library(jsonlite)
+library(ggplot2)
 library(plotly)
 
 # UI
@@ -989,8 +992,8 @@ ui <- fluidPage(
                       )
                ),
                column(6,
-                      h2("openFDA"),
-                      img(src = "www/openFDA_logo.png", height = 75, width = 414)
+                      h2("openFDA Logo"),
+                      img(src = "https://open.fda.gov/img/l_openFDA.png")
                )
              )
     ),
