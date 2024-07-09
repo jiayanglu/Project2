@@ -15,11 +15,14 @@ Install packages needed in the following code chunks.
 ```{r}
 #options(repos = "https://cloud.r-project.org")
 
-#install.packages(c("shiny", "tidyverse", "jsonlite"))
+#install.packages(c("shiny", "tidyverse", "jsonlite", "ggplot2", "plotly"))
 
 library(shiny)
 library(tidyverse)
 library(jsonlite)
+library(ggplot2)
+library(plotly)
+
 ```
 
 # openFDA API endpoint for animal drug adverse event
@@ -33,25 +36,25 @@ This is a query about how many reports regarding to any undesirable experience a
 ```{r}
 
 animal_API_reports_over_time <- function(start_date, end_date){
-  
+  #construct URL
   base_URL <- "https://api.fda.gov/"
   endpoint <- "animalandveterinary/event.json"
   query_reports_over_time <- "?count=original_receive_date"
   full_URL <- paste0(base_URL, endpoint, query_reports_over_time)
-  
+  #read in data
   output_API <- fromJSON(full_URL)
   reports_over_time_data <- as_tibble(output_API$results)
-  
+  #find the date boundaries from quried data
   earliest_date <- min(ymd(reports_over_time_data$time))
   latest_date <- max(ymd(reports_over_time_data$time))
-  
+  #define a boundry that user can query
   if (ymd(start_date) < earliest_date | ymd(end_date) > latest_date){
     
     message <- paste0("ERROR: Please pass a date between ", earliest_date, " and ", latest_date, " in the format of YYYYMMDD", ".")
     stop(message)
     
   } else {
-    
+    #construct URL according to input dates
     query_receivedate <- "?search=original_receive_date:"
     query_date_range <- paste0("[", start_date, "+TO+", end_date, "]&count=original_receive_date")
     full_URL <- paste0(base_URL, endpoint, query_receivedate, query_date_range)
@@ -79,7 +82,7 @@ animal_API_reports_over_time <- function(start_date, end_date){
 This is a query about primary reporter who holds or provides the most pertinent information related to the adverse event report within a date range in the openFDA API endpoint for the animal drug adverse event reports.
 
 ```{r}
-
+#same logic from the first code chunk
 animal_API_who_reports <- function(start_date, end_date){
   
   base_URL <- "https://api.fda.gov/"
@@ -123,7 +126,7 @@ animal_API_who_reports <- function(start_date, end_date){
 This is a query about the types of adverse events in the report within a date range in the openFDA API endpoint for the animal drug adverse event reports.
 
 ```{r}
-
+#same logic from the first code chunk
 animal_API_types_of_reports <- function(start_date, end_date){
   
   base_URL <- "https://api.fda.gov/"
@@ -167,7 +170,7 @@ animal_API_types_of_reports <- function(start_date, end_date){
 This is a query about animal breeds in the adverse events report within a date range in the openFDA API endpoint for the animal drug adverse event reports.
 
 ```{r}
-
+#same logic from the first code chunk
 animal_API_animal_breeds <- function(start_date, end_date){
   
   base_URL <- "https://api.fda.gov/"
@@ -211,7 +214,7 @@ animal_API_animal_breeds <- function(start_date, end_date){
 This is a query about reactions in the adverse events report within a date range in the openFDA API endpoint for the animal drug adverse event reports.
 
 ```{r}
-
+#same logic from the first code chunk
 animal_API_reactions <- function(start_date, end_date){
   
   base_URL <- "https://api.fda.gov/"
@@ -254,9 +257,8 @@ animal_API_reactions <- function(start_date, end_date){
 
 This is a query about animal's medical status after treatment within a date range in the openFDA API endpoint for the animal drug adverse event reports.
 
-
 ```{r}
-
+#same logic from the first code chunk
 animal_API_outcomes <- function(start_date, end_date){
   
   base_URL <- "https://api.fda.gov/"
@@ -304,7 +306,7 @@ Queries from openFDA API endpoint for adverse drug events are listed below.
 This is a query about how many reports regarding to any undesirable experience associated with the use of an animal drug, including serious drug side effects, product use errors, product quality problems, and therapeutic failures, within a date range in the openFDA API endpoint for the adverse drug events.
 
 ```{r}
-
+#here, a different endpoint is queried, same logic as the first code chunk
 drug_API_reports_over_time <- function(start_date, end_date){
   
   base_URL <- "https://api.fda.gov/"
@@ -353,7 +355,7 @@ drug_API_reports_over_time <- function(start_date, end_date){
 This is a query about category of individual who submittd the report within a date range in the openFDA API endpoint for the animal drug adverse event reports.
 
 ```{r}
-
+#same logic as the previous code chunk
 drug_API_who_reports <- function(start_date, end_date){
   
   base_URL <- "https://api.fda.gov/"
@@ -394,10 +396,9 @@ drug_API_who_reports <- function(start_date, end_date){
 
 ```
 
-# General query code
+# General query function
 
 This is a universal query code chunk to query from either "animalandveterinary" or "drug" endpoint of openFDA API. There are total 6 different queries to get 6 different types of data from "animalandveterinary" endpoint, which are "Reports over time"(query=1), "Who reports"(query=2), "Types of report"(query=3), "Animal breeds"(query=4), "Reactions"(query=5), and "Outcomes"(query=6). There are total 2 different queries to get 2 different types of data from "drug" endpoint, which are "Reports over time"(query=1), "Who reports"(query=2).
-
 
 ```{r}
 
@@ -407,26 +408,26 @@ endpoint_API_query <- function(endpoint, query, start_date, end_date){
     message <- paste0("ERROR: Please choose endpoint 'animalandveterinary' or 'drug'.")
     stop(message)
   }
-  
+  #construct URL
   base_URL <- "https://api.fda.gov/"
   event <- "/event.json"
   count <- "?count="
   receive_date <- if (endpoint == "drug") "receivedate" else "original_receive_date"
   full_URL <- paste0(base_URL, endpoint, event, count, receive_date)
-  
+  #read in data
   output_API <- fromJSON(full_URL)
   receivedate_data <- as_tibble(output_API$results)  
   
   earliest_date <- min(ymd(receivedate_data$time))
   latest_date <- max(ymd(receivedate_data$time))
-  
+  #find date boundaries from the database
   if (ymd(start_date) < earliest_date | ymd(end_date) > latest_date){
     
     message <- paste0("ERROR: Please pass a date between ", earliest_date, " and ", latest_date, " in the format of YYYYMMDD", ".")
     stop(message)
     
   } else {
-    
+    #extract different types of data
     if (endpoint == "animalandveterinary"){
       
       if (!query %in% c(1,2,3,4,5,6)){
@@ -462,7 +463,7 @@ endpoint_API_query <- function(endpoint, query, start_date, end_date){
         query_date_range <- paste0(":[", start_date, "+TO+", end_date, "]&count=", query_code)
       }
     }
-    
+    #constrict URL according to inputs
     search <- "?search="
     full_URL <- paste0(base_URL, endpoint, event, search, receive_date, query_date_range)
     
@@ -483,6 +484,8 @@ endpoint_API_query <- function(endpoint, query, start_date, end_date){
     
   }
 }  
+
+#this is the example that user can query different types of data using this general function
 
 # endpoint_API_query("animalandveterinary",1,20150101,20221231)
 # endpoint_API_query("animalandveterinary",2,20150101,20221231)
@@ -506,20 +509,22 @@ Below is the "Who reports" contingency table from 2022-01-01 to 2023-01-01 queri
 ```{r}
 
 fun_contingency_table1 <- function(start_date, end_date){
-  
+  #data query
   who_reports_animal <- endpoint_API_query("animalandveterinary",2,start_date,end_date)
   
   who_reports_animal <- who_reports_animal[[3]] |>
     rename(primarysource = term)
-  
+  #create a function to include a title
   print_tibble_with_title <- function(tbl, title) {
     cat(title, "\n")
     print(tbl)
   }
-  
+  #print a contigency table with a title
   print_tibble_with_title(who_reports_animal, paste0("<Who reports> Contingency Table: Primary Sources of Adverse Events Report from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint."))
   
 }
+
+#this is an example of how to use this function to create a contingency table
 
 start_date <- 20150101  
 end_date <- 20221231
@@ -530,14 +535,14 @@ fun_contingency_table1(start_date, end_date)
 
 ### from openFDA API "drug" endpoint
 
-Below is the "Who reports" contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API "drug" endpoint. The meanings of the values of variable term in the original output: 1 represents "Physician", 2 represents "Pharmacist", 3 represents "Other health professional", 4 represents "Lawyer", 5 represents "Consumer or non-health". I replaced these number values with their corresponding meanings in the final contingency table and added a title corresponding to the queried date range. 
+Below is the "Who reports" contingency table from 2022-01-01 to 2023-01-01 queried from openFDA API "drug" endpoint. The meanings of the values of variable term in the original output: 1 represents "Physician", 2 represents "Pharmacist", 3 represents "Other health professional", 4 represents "Lawyer", 5 represents "Consumer or non-health". I replaced these number values with their corresponding meanings in the final contingency table and added a title corresponding to the queried date range.
 
 ```{r}
 
 fun_contingency_table2 <- function(start_date,end_date){
-  
+  #data query
   who_reports_drug <- endpoint_API_query("drug",2,start_date,end_date)
-  
+  #define variable term
   who_reports_drug <- who_reports_drug[[3]] |>
     mutate(primarysource = as.character(term)) |>
     mutate(primarysource = case_when(
@@ -559,6 +564,8 @@ fun_contingency_table2 <- function(start_date,end_date){
   
 }
 
+#this is an example of how to use this function to create a contingency table
+
 start_date <- 20150101  
 end_date <- 20221231 
 
@@ -566,7 +573,7 @@ fun_contingency_table2(start_date, end_date)
 
 ```
 
-## Numerical summaries 
+## Numerical summaries
 
 ### for "Type of Report" queries
 
@@ -578,7 +585,7 @@ fun_summary1 <- function(start_date, end_date){
   
   start_year <- substr(start_date, 1, 4)
   end_year <- substr(end_date, 1, 4)
-  
+  #cycle through all years from input and calculate relative percentages from each year 
   for(i in start_year:end_year){
     
     start_date2 <- as.numeric(paste0(i, "0101"))
@@ -594,11 +601,11 @@ fun_summary1 <- function(start_date, end_date){
     assign(paste0("type_of_report_animal_", i), type_of_report_animal)
     
   }
-  
+  #combine data from all years together
   data_frames <- mget(paste0("type_of_report_animal_", start_year:end_year))
   
   type_of_report_animal_year_range <- bind_rows(data_frames, .id = "source_year") 
-  
+  #calculate numerical summaries for percentages for all years
   type_of_report_animal_year_range_stat <- type_of_report_animal_year_range |>
     group_by(reaction) |>
     summarize(
@@ -610,7 +617,6 @@ fun_summary1 <- function(start_date, end_date){
         "IQR" = IQR
       ), .names = "{.fn}_{.col}"))
   
-  #return(type_of_report_animal_year_range_stat)
   title <- paste0("Summary statistics for percentage of types of adverse events from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint." )
 
   print_tibble_with_title <- function(tbl, title) {
@@ -622,13 +628,12 @@ fun_summary1 <- function(start_date, end_date){
 
 }
 
+#this is an example of how to use this function to generate numerical summaries of percentages
+
 start_date <- 20150101  
 end_date <- 20221231
 
 fun_summary1(start_date, end_date)
-
-paste0("Summary statistics for percentage of types of adverse events from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint.\n")
-return(fun_summary1(start_date, end_date))
 
 ```
 
@@ -642,7 +647,7 @@ fun_summary2 <- function(start_date, end_date){
   
   start_year <- substr(start_date, 1, 4)
   end_year <- substr(end_date, 1, 4)
-  
+    #cycle through all years from input and calculate relative percentages from each year 
   for(i in start_year:end_year){
     
     start_date2 <- as.numeric(paste0(i, "0101"))
@@ -657,11 +662,11 @@ fun_summary2 <- function(start_date, end_date){
     assign(paste0("outcomes_animal_", i), outcomes_animal)
     
   }
-  
+  #combine data from all years together
   data_frames <- mget(paste0("outcomes_animal_", start_year:end_year))
   
   outcomes_animal_year_range <- bind_rows(data_frames, .id = "source_year")
-  
+  #calculate numerical summaries for percentages for all years
   outcomes_animal_year_range_stat <- outcomes_animal_year_range |>
     group_by(medical.status.outcome) |>
     summarize(
@@ -673,7 +678,6 @@ fun_summary2 <- function(start_date, end_date){
         "IQR" = IQR
       ), .names = "{.fn}_{.col}"))
   
-  #return(outcomes_animal_year_range_stat)
   title <- paste0("Summary statistics for percentage by medical status outcome from ", start_date, " to ", end_date, " queried from openFDA <animalandveterinary> endpoint." )
 
   print_tibble_with_title <- function(tbl, title) {
@@ -684,6 +688,8 @@ fun_summary2 <- function(start_date, end_date){
   print_tibble_with_title(outcomes_animal_year_range_stat, title)
   
 }
+
+#this is an example of how to use this function to generate numerical summaries of percentages
 
 start_date <- 20150101  
 end_date <- 20221231
@@ -701,9 +707,9 @@ Based on the "Reports over time" query for how many adverse reports regarding to
 ```{r}
 
 fun_plot1_1 <- function(endpoint, start_date, end_date){
-  
+  #query data from the general query function
   reports_over_time_animal  <- endpoint_API_query(endpoint,1,start_date,end_date)[[3]] 
-  
+  #calculate summary counts by each year
   reports_over_time_animal_year  <- reports_over_time_animal |>
     group_by(year = lubridate::year(receivedate_ymd)) |>
     summarise(count = sum(count)) |>
@@ -715,26 +721,27 @@ fun_plot1_1 <- function(endpoint, start_date, end_date){
   
   reports_over_time_animal_plot <- reports_over_time_animal_month |>
     mutate(year = as.character(year))
-  
+  #create a bar plot using the data above
   plot1_1 <- ggplot(reports_over_time_animal_year, aes(year, count)) +
     geom_bar(stat = "identity", fill = "skyblue", width = 0.5) + 
-    # Bar plot
     labs(x = "Year", y = "Counts") +
     ggtitle(paste0("Counts of Received Adverse events Reports from ", start_date, " to ", end_date, ".")) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
   return(plot1_1)
 }
 
+#example of using this function
 endpoint <- "drug"
 start_date <- 20150101
 end_date <- 20221231
 
 fun_plot1_1(endpoint, start_date, end_date)
 
+#create another function to further calculate summary counts from each month
 fun_plot1_2 <- function(endpoint, start_date, end_date, input_year){
   
   reports_over_time_animal  <- endpoint_API_query(endpoint,1,start_date,end_date)[[3]] 
-  
+  #calculate summary counts by each month
   reports_over_time_animal_year  <- reports_over_time_animal |>
     group_by(year = lubridate::year(receivedate_ymd)) |>
     summarise(count = sum(count)) |>
@@ -747,10 +754,9 @@ fun_plot1_2 <- function(endpoint, start_date, end_date, input_year){
   reports_over_time_animal_stat <- reports_over_time_animal_month |>
     filter(year == input_year) |>
     mutate(year = as.character(year))
-  
+  #create a bar plot using the data above
   plot1_2 <- ggplot(reports_over_time_animal_stat, aes(month, count)) +
     geom_bar(stat = "identity", position = "dodge", fill = "skyblue") + 
-    # Bar plot
     labs(x = "Month", y = "Counts") +
     ggtitle(paste0("Counts of Received Adverse events Reports ", "in ", input_year, ".")) +
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -758,12 +764,12 @@ fun_plot1_2 <- function(endpoint, start_date, end_date, input_year){
   
 }
 
+#example of using this function
+
 endpoint <- "animalandveterinary"
 start_date <- 20150101
 end_date <- 20221231
 input_year <- 2019
-
-year(ymd(start_date))
 
 fun_plot1_2(endpoint, start_date, end_date, input_year)
 
@@ -777,14 +783,14 @@ Based on the "Who reports" query for primary reporter who holds or provides the 
 
 fun_plot2 <- function(endpoint, start_date, end_date){
   if (endpoint == "animalandveterinary"){
-    
+    #query data from the general query function and calculate percentages by each category
     who_reports <- endpoint_API_query("animalandveterinary",2,start_date,end_date)[[3]] |>
       rename(primarysource = term) |>
       mutate(percentage = count / sum(count) * 100) |>
       select(primarysource, percentage, count)
     
   } else if (endpoint == "drug"){
-    
+    #query data from another endpoint
     who_reports <- endpoint_API_query("drug",2,start_date,end_date)[[3]] |>
       mutate(primarysource = as.character(term)) |>
       mutate(primarysource = case_when(
@@ -799,19 +805,7 @@ fun_plot2 <- function(endpoint, start_date, end_date){
       mutate(percentage = count / sum(count) * 100) |>
       select(primarysource, percentage, count)
   }
- 
-   # plot2 <- ggplot(who_reports, aes(x = "", y = percentage, fill = primarysource)) +
-   #  geom_bar(stat = "identity", width = 1, color = "white") +
-   #   coord_polar("y", start = 0) +
-   #  labs(title = paste0("Primary Sources of Adverse Events Report from ", start_date, " to ", end_date),
-   #       x = NULL, y = NULL) +
-   #  scale_fill_discrete(name = "Primary Source") +
-   #  theme_void() +
-   #  theme(plot.title = element_text(hjust = 0.5, size = 14),
-   #        legend.position = "right",
-   #        legend.text = element_text(size = 8),
-   #        legend.title = element_text(size = 10))
-  
+  #create an interactive plot using plotly::plot_ly to see percentages and counts from each category
   plot2 <- plotly::plot_ly(who_reports, labels = ~primarysource, values = ~count, type = 'pie',
                            textinfo = 'label+percent+value',
                            hoverinfo = 'text',
@@ -824,6 +818,8 @@ fun_plot2 <- function(endpoint, start_date, end_date){
   # Display the plot.
   return(list(data = who_reports, plot = plot2))
 }
+
+#example of using this function
 
 endpoint <- "drug"
 start_date <- 20150101  
@@ -843,14 +839,14 @@ fun_plot3 <- function(endpoint, start_date, end_date){
   
   start_year <- substr(start_date, 1, 4)
   end_year <- substr(end_date, 1, 4)
-  
+  #cycle through the input years and calculate percentages for each category
   for(i in start_year:end_year){
     
     start_date2 <- as.numeric(paste0(i, "0101"))
     end_date2 <- as.numeric(paste0(i, "1231"))
-    
+    #query data
     type_of_report_animal <- endpoint_API_query(endpoint,3,start_date2,end_date2)
-    
+
     type_of_report_animal <- type_of_report_animal[[3]] |>
       rename(reaction = term) |>
       mutate(percentage = count / sum(count) * 100) |>
@@ -862,22 +858,21 @@ fun_plot3 <- function(endpoint, start_date, end_date){
   
   data_frames <- mget(paste0("type_of_report_animal_", start_year:end_year))
   type_of_report_animal_year_range <- bind_rows(data_frames, .id = "source_year") 
-  
+  #create a boxplot
   plot3 <- ggplot(type_of_report_animal_year_range, 
                   aes(reaction,
                       percentage,
                       color=reaction)) +
-    # Add the box plot layer.
     geom_boxplot() + 
-    # Jitter the points to add a little more info to the boxplot.
+    # jitter the points to add a little more info to the boxplot.
     geom_jitter() + 
-    # Add labels to the axes.
+    # add labels to the axes.
     scale_x_discrete(name = "Reaction", labels = LETTERS[1:11]) + 
     scale_y_continuous("Percentage%") +
     scale_color_discrete("Reaction") +
-    # Add a title.
+    # add a title
     ggtitle(paste0("Percentage of Types of Adverse Events from ", start_date, " to ", end_date)) +
-    # Remove the legend because it isn't needed.
+    # remove the legend because it isn't needed.
     theme(legend.position = "right",
           legend.text = element_text(size = 7),
           legend.title = element_text(size = 8),
@@ -885,10 +880,11 @@ fun_plot3 <- function(endpoint, start_date, end_date){
           axis.text.x = element_text(size = 8),
           axis.text.y = element_text(size = 8)) 
   
-  # Display the plot.
   plot3
   
 }
+
+#example of using this function
 
 endpoint <- "animalandveterinary"
 start_date <- 20150101  
@@ -908,7 +904,7 @@ fun_plot4 <- function(endpoint, start_date, end_date){
   
   start_year <- substr(start_date, 1, 4)
   end_year <- substr(end_date, 1, 4)
-  
+  #cycle through the input years and calculate percentages for each category
   for(i in start_year:end_year){
     
     start_date2 <- as.numeric(paste0(i, "0101"))
@@ -926,218 +922,43 @@ fun_plot4 <- function(endpoint, start_date, end_date){
   
   data_frames <- mget(paste0("outcomes_animal_", start_year:end_year))
   outcomes_animal_year_range <- bind_rows(data_frames, .id = "source_year")
-  
+  #create a dotplot
   plot4 <- ggplot(outcomes_animal_year_range, 
                   aes(medical.status.outcome,
                       percentage,
                       color=medical.status.outcome
                   )) +
-    # Add the box plot layer.
     geom_dotplot(binaxis = "y", stackdir = "center", binwidth = 1.5) + 
-    # Jitter the points to add a little more info to the boxplot.
+    # jitter the points to add a little more info to the boxplot.
     geom_jitter() + 
-    # Add labels to the axes.
     scale_x_discrete(name = "Medical Status Outcome", labels = LETTERS[1:6]) + 
     scale_y_continuous("Percentage%") +
     scale_color_discrete("Outcomes") +
-    # Add a title.
     ggtitle(paste0("Percentage of Medical Status Outcomes after Treatment from ", start_date, " to ", end_date)) + 
-    # Remove the legend because it isn't needed.
+    # remove the legend because it isn't needed.
     theme(legend.position = "right",
-          #        legend.position=c(0.85, 0.3),
           legend.text = element_text(size = 7),
           legend.title = element_text(size = 8),
           plot.title = element_text(size = 11),
           axis.text.x = element_text(size = 8),
           axis.text.y = element_text(size = 8)) 
-  # Display the plot.
+  
   plot4
   
 }
 
+#example of using this function
 endpoint <- "animalandveterinary"
 start_date <- 20150101  
 end_date <- 20221231
 
 fun_plot4(endpoint, start_date, end_date)
+
 ```
 
 # Shiny app
 
-##fun_plot
-
-```{r}
-library(shiny)
-library(plotly)
-
-ui <- fluidPage(
-  titlePanel("Adverse Events Reports Analysis"),
-  
-  sidebarLayout(
-    sidebarPanel(
-      h2("Data Download"),
-      selectInput("endpoint", "Endpoint:", 
-                  choices = c("animalandveterinary", "drug"),
-                  selected = "animalandveterinary"),
-      selectInput("type_of_data", "Select Type of Data:",
-                  choices = c("Reports over time", "Who reports", "Types of report", "Outcomes")),
-      dateInput("start_date", "Start Date:", value = "2020-01-01"),
-      dateInput("end_date", "End Date:", value = "2022-12-31"),
-      hr(),
-      h2("Data Exploration"),
-      conditionalPanel(
-        condition = "input.type_of_data == 'Reports over time'",
-        radioButtons("summary", "Summary Type:",
-                     choices = c("Yearly Summary", "Monthly Summary"))
-      ),
-      actionButton("query_button", "Query API"),
-      conditionalPanel(
-        condition = "input.type_of_data == 'Reports over time' && input.summary == 'Monthly Summary'",
-        selectInput("input_year", "Select Year:", choices = NULL)
-      )),
-    mainPanel(
-      tabsetPanel(
-        tabPanel("Reports over time", plotOutput("plot_reports_over_time")),
-        tabPanel("Who reports", plotlyOutput("plot_who_reports")),
-        tabPanel("Types of report", plotOutput("plot_types_of_report")),
-        tabPanel("Outcomes", plotOutput("plot_outcomes")),
-        tabPanel("Data Download",
-                 tableOutput("download_data_table"),
-                 downloadButton("download_subset", "Download Subset Data"))  
-      )
-    )
-  )
-)
-
-
-# Define server logic
-server <- function(input, output, session) {
-  # Query API and display data table
-  query_data <- reactive({
-    req(input$query_button)
-    
-    endpoint <- input$endpoint
-    start_date <- input$start_date
-    end_date <- input$end_date
-    type_of_data <- input$type_of_data
-    summary <- input$summary
-    input_year <- input$input_year
-    
-    if (endpoint == "animalandveterinary"){
-      
-      if (type_of_data == "Reports over time" & summary == "Yearly Summary") {
-        data <- fun_plot1_1(endpoint, start_date, end_date)$data
-      } else if (type_of_data == "Reports over time" & summary == "Monthly Summary"){
-        data <- fun_plot1_2(endpoint, start_date, end_date, input_year)$data
-      } else if (type_of_data == "Who reports"){
-        data <- fun_plot2(endpoint, start_date, end_date)$data
-      } else if (type_of_data == "Types of report"){
-        data <- fun_plot3(endpoint, start_date, end_date)$data
-      } else if (type_of_data == "Outcomes"){
-        data <-fun_plot4(endpoint, start_date, end_date)$data
-      }
-      
-      return(data)
-    } else if (endpoint == "drug"){
-      
-      if (type_of_data == "Reports over time" & summary == "Yearly Summary") {
-        data <- fun_plot1_1(endpoint, start_date, end_date)$data
-      } else if (type_of_data == "Reports over time" & summary == "Monthly Summary"){
-        data <- fun_plot1_2(endpoint, start_date, end_date, input_year)$data
-      } else if (type_of_data == "Who reports"){
-        data <- fun_plot2(endpoint, start_date, end_date)$data
-      } else {
-        data <- paste("Error: Data is only available for 'Reports over time' and 'Who reports' tabs in 'drug' endpoint.")
-      }
-      
-      return(data)
-    }
-    
-  })
-  
-  output$download_data_table <- renderTable({
-    query_data()
-  })
-    
-  # Subset data and download as CSV
-  output$download_subset <- downloadHandler(
-    filename = function() {
-      paste("subset_data_", Sys.Date(), ".csv", sep = "")
-    },
-    content = function(file) {
-      write.csv(query_data(), file, row.names = FALSE)
-    }
-  )
-  
-  # Generate plot based on user selection
-  output$plot_reports_over_time <- renderPlot({
-    req(input$type_of_data, input$summary)
-    
-    if (input$type_of_data == "Reports over time" & input$summary == "Yearly Summary") {
-      plot <- fun_plot1_1(input$endpoint, input$start_date, input$end_date)
-    } else if (type_of_data == "Reports over time" & summary == "Monthly Summary"){
-      plot <- fun_plot1_2(input$endpoint, input$start_date, input$end_date, input$input_year)
-    } 
-    
-    return(plot)
-  })
-  
-    output$plot_who_reports <- renderPlotly({
-    req(input$type_of_data)
-    
-    if (input$type_of_data == "Who reports") {
-      plot <- fun_plot2(input$endpoint, input$start_date, input$end_date)$plot
-    } 
-    
-    return(plot)
-  })
-    
-    output$plot_types_of_report  <- renderPlot({
-      req(input$type_of_data)
-      
-      if (input$endpoint == "animalandveterinary" && input$type_of_data == "Types of report") {
-        plot <- fun_plot3(input$endpoint, input$start_date, input$end_date)
-        return(plot)
-      } else if (input$endpoint == "drug" && input$type_of_data == "Types of report"){
-        validate(need(FALSE, "Error: Plot is only available for 'Reports over time' and 'Who reports' tabs in 'drug' endpoint."))
-        return(NULL)
-      }
-    })
-    
-    output$plot_outcomes <- renderPlot({
-      req(input$type_of_data)
-      
-      if (input$endpoint == "animalandveterinary" && input$type_of_data == "Outcomes") {
-        plot <- fun_plot4(input$endpoint, input$start_date, input$end_date)
-        return(plot)
-      } else if (input$endpoint == "drug" && input$type_of_data == "Outcomes"){
-        validate(need(FALSE, "Error: Plot is only available for 'Reports over time' and 'Who reports' tabs in 'drug' endpoint."))
-        return(NULL)
-      }
-    })
-    
-  #Update year choices based on data available
-  observe({
-    req(input$type_of_data, input$summary)
-    
-    if (input$type_of_data == "Reports over time" && input$summary == "Monthly Summary") {
-      data <- query_data()
-      
-      #  years <- unique(year(data$year))
-      years <- year(ymd(input$start_date)):year(ymd(input$end_date))
-      
-      updateSelectInput(session, "input_year", choices = years)
-    } else {
-      updateSelectInput(session, "input_year", choices = NULL)
-    }
-  })
-}
-
-# Run the application 
-shinyApp(ui = ui, server = server)
-```
-
-## new version
+This the a Shiny app which provides comprehensive analysis and exploration of adverse events reports retrieved from the FDA's openFDA API. This app includes all the plots, contingency tables, and numerical summaries generated from above.
 
 ```{r}
 library(shiny)
@@ -1155,21 +976,21 @@ ui <- fluidPage(
              fluidRow(
                column(6,
                       h2("About This App"),
-                      tags$p("This app provides analysis of adverse events reports."),
-                      tags$p("It allows users to query data from an API, visualize data summaries, and download data subsets."),
-                      tags$p("For more information about the data source, please visit ",
-                             tags$a("Data Source Website", href = "https://example.com"),
+                      tags$p("Purpose: This app provides comprehensive analysis and exploration of adverse events reports retrieved from the FDA's openFDA API."),
+                      tags$p("About the data: It allows users to query data from two endpoints: 'animalandveterinary' and 'drug', and analyze the data through interactive plots, contigency tables, numerical summaries, and downloading data subsets."),
+                      tags$p("About the data source: For more detailed information about the data source, please visit ",
+                             tags$a("openFDA Website", href = "https://open.fda.gov"),
                              "."),
                       tags$p("Purpose of Each Tab:"),
                       tags$ul(
-                        tags$li("About: Provides information about the app and its purpose."),
-                        tags$li("Data Download: Allows users to query and download data."),
-                        tags$li("Data Exploration: Enables exploration of data through plots and summaries.")
+                        tags$li("About: Provides an introduction to the app and its purpose."),
+                        tags$li("Data Download: Allow the user to query data from the API, view and subset the returned data, and save it as a file."),
+                        tags$li("Data Exploration: Enables exploration of data through interactive plots, contingency tables, and numerical summaries.")
                       )
                ),
                column(6,
-                      h2("Related Image"),
-                      img(src = "path_to_your_image.png", height = 200, width = 200)
+                      h2("openFDA"),
+                      img(src = "www/openFDA_logo.png", height = 75, width = 414)
                )
              )
     ),
@@ -1468,5 +1289,5 @@ output$exploration_contingency <- renderUI({
 
 # Run the application
 shinyApp(ui = ui, server = server)
-```
 
+```
