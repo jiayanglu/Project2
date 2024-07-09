@@ -31,7 +31,7 @@ ui <- fluidPage(
                       )
                ),
                column(6,
-                      h2("openFDA Logo"),
+                      h2("Logo:"),
                       img(src = "https://open.fda.gov/img/l_openFDA.png")
                )
              )
